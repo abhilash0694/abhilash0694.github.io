@@ -1,0 +1,34 @@
+(function (document) {
+  var gemmyModule = $("meta[name=gemmy-module]").attr("content");
+  if (gemmyModule && gemmyModule.length > 0) {
+    var gemmyUrl = "https://gemmy.gem.gov.in/client/webintegration/scripts/ddf2af37-d142-42b3-b0bf-282661bfebe3.js?instance=" + gemmyModule + "&lang=" + $("html").attr("lang");
+    document.write('\x3Cscript src="' + gemmyUrl + '"type="text/javascript" async charset="UTF-8" >\x3C/script>' );
+  }
+})(document);
+
+var externalLnk;
+$(document).ready(function (val) {
+  //checkCookieRedirect();
+  $(".externalLink").on("click", function (event) {
+    event.preventDefault();
+    var result = confirm(
+      "This will open a new tab and lead you to an external website."
+    );
+    $('.externalLink[href="' + externalLnk + '"]').attr("target", "_blank");
+    var url = externalLnk;
+    if (result == true) {
+      var url = $(this).attr("href");
+      window.open(url, "_blank");
+    }
+  });
+  $(".cd-popup-lang").on("focusin", function (e) {
+    $(this).find("cd-popup-container").find("cd-buttons").attr("tabindex", -1);
+  });
+  $(".topse .hasch > a").attr("data-toggle", "dropdown").dropdown();
+});
+
+$(document).ready(function () {
+  $(".deskhead .fd").click(function () {
+    $(".fp, .fmm").removeAttr("style");
+  });
+});

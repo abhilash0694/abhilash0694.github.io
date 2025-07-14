@@ -1,0 +1,1073 @@
+/*!
+ * IE10 viewport hack for Surface/desktop Windows 8 bug
+ * Copyright 2014-2015 Twitter, Inc.
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+ */
+
+/*
+ * See the Getting Started docs for more information:
+ * http://getbootstrap.com/getting-started/#support-ie10-width
+ */
+@-ms-viewport     { width: device-width; }
+@-o-viewport      { width: device-width; }
+@viewport         { width: device-width; }
+
+/* line 1, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .headin {
+  box-shadow: 0 3px 2px -2px rgba(0, 0, 0, 0.1);
+  -webkit-box-shadow: 0 3px 7px -2px rgba(0, 0, 0, 0.1);
+}
+/* line 5, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .gemcustom ul, .g3fh .gemcustom li {
+  padding: 0;
+  margin: 0;
+}
+/* line 9, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .proav img {
+  width: 3em;
+  margin-right: 1em;
+}
+/* line 13, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .gemcustom .btn {
+  display: inline-block;
+  padding: 6px 12px;
+  margin-bottom: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.42857143;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  -ms-touch-action: manipulation;
+  touch-action: manipulation;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  background-image: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: #05256e;
+  border: none;
+  border-radius: 0.5em;
+  color: #fff;
+  font-size: 1em;
+}
+/* line 41, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .gemcustom {
+  font-size: 16px;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: normal;
+  line-height: normal;
+  color: #4A4A4A;
+  text-align: left;
+}
+/* line 49, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .grbg {
+  background: #f8f8f8;
+}
+/* line 52, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .sc {
+  float: left;
+  width: 100%;
+  position: relative;
+}
+/* line 57, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .gemcustom img {
+  max-width: 100%;
+}
+/* line 60, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .gemcustom a {
+  color: #333;
+}
+/* line 63, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .grbg {
+  background: #f8f8f8;
+}
+/* line 66, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .sc {
+  float: left;
+  width: 100%;
+  position: relative;
+}
+/* line 71, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .topse {
+  padding: 0.6em 0;
+}
+/* line 74, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .fml span {
+  left: 0.6em;
+  position: relative;
+}
+/* line 78, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .cont {
+  margin: 0 auto;
+  width: 93vw;
+  display: block;
+}
+/* line 83, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .inline-menu {
+  list-style: none;
+}
+/* line 86, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .inline-menu li {
+  list-style: none;
+  padding-right: 0.8em;
+  display: inline-block;
+}
+/* line 91, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .inline-menu li a {
+  font-size: 1em;
+  background-color: transparent;
+  text-decoration: none;
+  color: #333;
+  outline: none;
+  border: none;
+}
+/* line 99, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .inline-menu li a img {
+  margin-right: 0.4em;
+  width: 1em;
+}
+/* line 105, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .headsh a {
+  display: inline-block;
+  text-align: center;
+  margin-left: 0.9em;
+  padding-bottom: 0;
+}
+/* line 111, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .select-style {
+  border: none;
+  width: 4.9em;
+  border-radius: 3px;
+  overflow: hidden;
+  background: url(../javascripts/shared_assets/gem-headr/images/down-arrow.svg?1717516922);
+  background-size: 1em;
+  background-repeat: no-repeat;
+  background-position: right 0.3em;
+  height: 1.5em;
+  float: right;
+}
+/* line 123, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .select-style select {
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  border: none;
+  box-shadow: none;
+  background: transparent;
+  background-image: none;
+  -webkit-appearance: none;
+}
+/* line 133, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .fdn {
+  margin-right: 3.9em;
+  background: #484848;
+  width: 1.6em;
+  border-radius: 100%;
+  color: #fff;
+  height: 1.6em;
+  position: relative;
+  top: 0.1em;
+  line-height: 1.7em;
+  display: inline-block;
+  text-align: center;
+  margin-left: 0.9em;
+  cursor: pointer;
+}
+/* line 148, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .logwrp {
+  padding: 1em 0;
+}
+/* line 151, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .row {
+  margin-left: -1.071em;
+  margin-right: -1.071em;
+}
+/* line 155, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh div .hemen {
+  padding: 0;
+  padding-top: 0.6em;
+}
+/* line 159, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .hemen > li {
+  position: relative;
+}
+/* line 163, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .inline-menu li {
+  list-style: none;
+  padding-right: 0.8em;
+  display: inline-block;
+}
+/* line 168, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .hemen li.line {
+  border-right: 0.1em solid #eaeaea;
+}
+/* line 171, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .hemen li.line a {
+  margin-right: 1em;
+}
+/* line 174, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .hemen li a {
+  border-right: 0.1em solid transparent;
+  padding: 0.6em 1em;
+  display: inline-block;
+}
+/* line 180, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .inline-menu li a {
+  font-size: 1em;
+}
+/* line 183, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .hemen {
+  padding: 0;
+  padding-top: 0.3em;
+}
+/* line 188, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .lg select {
+  width: 97%;
+  margin-top: 1em;
+  display: block;
+  clear: both;
+  float: right;
+  border: 0.08em solid #ccc;
+  padding: 0.3em 0;
+  margin-right: 0.7em;
+}
+/* line 199, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .hemen li {
+  padding: 0;
+}
+/* line 203, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .hemen li a {
+  border-right: none;
+  padding: 0.6em 1em;
+  display: inline-block;
+  margin: 0;
+}
+/* line 210, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .hemen li.line a {
+  margin: 0.7em 1.2em 0.7em 1.2em;
+}
+/* line 214, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .mainmenu li a, .g3fh .mainmenu li a:focus {
+  color: #484848;
+  padding: 0.7em 0.5em;
+  display: inline-block;
+  font-size: 0.9em;
+}
+/* line 221, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .mainmenu li a:hover {
+  color: #f5821f;
+}
+/* line 225, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .iconslist {
+  text-align: center;
+}
+/* line 229, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .logwrp {
+  padding: 1em 0;
+}
+/* line 233, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .iconset {
+  display: inline-block;
+  padding: 0.9em;
+  width: 5.2em;
+  height: 5.2em;
+  border: 0.1em solid #eaeaea;
+  border-radius: 100%;
+  margin-bottom: 1em;
+}
+/* line 242, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .hemen ul {
+  position: absolute;
+  z-index: 999999;
+  top: 2.4em;
+  width: 11.4em;
+  right: 0.7em;
+  background: #ededed;
+  border-radius: 0;
+  display: none;
+  border: none;
+  border-radius: 0px 0px 10px 10px;
+}
+/* line 256, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .haschild:hover > ul {
+  display: block;
+}
+/* line 261, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .haschild:hover > a,
+.g3fh .haschild:focus > a {
+  color: #F5821F;
+}
+/* line 265, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .hemen ul li {
+  display: block;
+  text-align: left;
+}
+/* line 270, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .hemen .haschild {
+  background: url(../javascripts/shared_assets/gem-headr/images/down-arrow.svg?1717516922);
+  background-size: 1em;
+  background-repeat: no-repeat;
+  background-position: right 0.8em;
+  padding-right: 0.5em!important;
+}
+/* line 278, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .hemen .haschild:hover {
+  background: url(../javascripts/shared_assets/gem-headr/images/down-arrow-o.svg?1717516922);
+  background-size: 1em;
+  background-repeat: no-repeat;
+  background-position: right 0.8em;
+  padding-right: 0.5em!important;
+}
+/* line 286, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .hemen .haschild .haschild {
+  background: url(../javascripts/shared_assets/gem-headr/images/left-arrow.svg?1717516922);
+  background-size: 0.7em;
+  background-repeat: no-repeat;
+  background-position: 0.8em 0.9em;
+  padding: 0em!important;
+}
+/* line 293, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .hemen .haschild .haschild:hover {
+  background: url(../javascripts/shared_assets/gem-headr/images/left-arroww.svg?1717516922) #a5a3a3;
+  background-size: 1.4em;
+  background-repeat: no-repeat;
+  background-position: 0.6em 0.9em;
+  padding: 0em!important;
+}
+/* line 300, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .hemen .haschild .haschild:hover > a {
+  color: #fff;
+}
+/* line 303, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .hemen .haschild .haschild > a {
+  padding-left: 1.5em;
+  padding-right: 0px;
+}
+/* line 307, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .hemen .haschild .haschild ul {
+  background: #a5a3a3;
+  right: 10.9em;
+  top: 0em;
+  box-shadow: 0px 1px 5px #636363;
+  overflow: hidden;
+}
+/* line 315, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .hemen .haschild .haschild ul li:hover {
+  background: #888888;
+}
+/* line 318, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .hemen .haschild .haschild ul a {
+  color: #fff;
+}
+/* line 321, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .select-style {
+  border: none;
+  width: 4.9em;
+  border-radius: 3px;
+  overflow: hidden;
+  background: url(../javascripts/shared_assets/gem-headr/images/down-arrow.svg?1717516922);
+  background-size: 1em;
+  background-repeat: no-repeat;
+  background-position: right 0.3em;
+  height: 1.5em;
+  float: right;
+}
+/* line 333, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .select-style select {
+  padding: 0;
+  width: 100%;
+  border: none;
+  box-shadow: none;
+  background: transparent;
+  background-image: none;
+  -webkit-appearance: none;
+}
+/* line 343, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .select-style select:focus {
+  outline: none;
+}
+/* line 347, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .hemen ul li a {
+  padding: 0.7em 0em;
+  display: block;
+  border-top: 0.08em solid #efeeee;
+  margin: 0 0.6em;
+}
+/* line 354, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .hemen ul li:first-child a {
+  border: none;
+}
+/* line 357, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .mainmenu {
+  background: #f8f8f8;
+}
+/* line 360, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .hemen .haschild:hover {
+  background: url(../javascripts/shared_assets/gem-headr/images/down-arrow-o.svg?1717516922);
+  background-size: 1em;
+  background-repeat: no-repeat;
+  background-position: right 0.8em;
+  padding-right: 0.5em!important;
+}
+/* line 367, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .inline-menu li {
+  list-style: none;
+  padding-right: 0.8em;
+  display: inline-block;
+}
+/* line 372, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .mainmenu li a, .g3fh .mainmenu li a:focus {
+  color: #484848;
+  padding: 0.7em 0.5em;
+  display: inline-block;
+  font-size: 0.9em;
+}
+/* line 378, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .blbg {
+  background: #05256e;
+  padding-top: 1.3rem;
+  padding-bottom: 1.3rem;
+  color: #fff;
+}
+/* line 384, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .sec {
+  padding-top: 2.2rem;
+  padding-bottom: 2.5rem;
+  float: left;
+  width: 100%;
+  position: relative;
+}
+/* line 391, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .vis span {
+  font-size: 2em;
+}
+/* line 394, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .cpy2 {
+  display: none;
+}
+/* line 397, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .fm {
+  padding-bottom: 0.9em;
+}
+/* line 400, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .list-inline > li {
+  padding-right: 0.4em;
+  padding-left: 0.4em;
+}
+/* line 404, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .fm li a {
+  font-size: 0.8em;
+  color: #fff;
+  position: relative;
+  top: -0.4em;
+}
+/* line 410, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh footer p {
+  font-size: 0.7em;
+}
+/* line 413, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .fsco img {
+  width: 1.5em;
+  margin-bottom: 0.3em;
+  margin-left: 0.3em;
+}
+/* line 418, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .mobhead {
+  display: none;
+  padding: 1em 0 1em 1em;
+}
+/* line 422, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .mse {
+  width: 34px;
+  margin-right: 24px;
+  margin-top: 4px;
+  display: block;
+}
+/* line 428, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .hemen li li a {
+  padding-left: 1.5em;
+}
+/* line 431, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .mmen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: #05256e;
+  z-index: 999;
+  overflow-y: scroll;
+  display: none;
+}
+/* line 442, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .mmen.open {
+  display: block;
+}
+/* line 445, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .sd {
+  width: 3em;
+  display: block;
+  margin-top: 1.7em;
+  margin-bottom: 1em;
+  float: right;
+  margin-right: 1.6em;
+}
+/* line 453, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .mmen li:first-child {
+  border: none;
+}
+/* line 456, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .mmen li a {
+  color: #fff;
+  display: block;
+  padding: 0.9em 0;
+  font-size: 1.3em;
+}
+/* line 462, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .mmen li.ges {
+  background: #fff;
+  text-align: center;
+  border: 1px solid #F5821F;
+  border-radius: 8px;
+  font-size: em;
+}
+/* line 469, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .mmen li.ges a {
+  color: #484848;
+  display: inline-block;
+  padding: 0.7em 0.3em;
+}
+/* line 474, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .mmen li a {
+  padding: 0.7em 0;
+}
+/* line 477, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .mmen li {
+  padding: 0px 0;
+  border-bottom: 1px solid #ccc;
+  margin: 0 17px;
+  list-style: none;
+}
+/* line 483, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .mmen li {
+  padding: 0px 0;
+  border-bottom: 1px solid #ccc;
+  margin: 0 17px;
+  list-style: none;
+}
+/* line 489, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .mmen .sc ul {
+  display: none;
+}
+/* line 492, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .mmen li:first-child {
+  border: none;
+}
+/* line 495, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .mmen li.hasch {
+  padding-left: 0em;
+}
+/* line 498, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .mmen .sc .openmm > ul {
+  display: block;
+}
+/* line 501, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .mmen li.hasch > a:after {
+  content: '+';
+  font-size: 2.6em;
+  color: #fff;
+  position: absolute;
+  left: 86%;
+  margin-top: -0.4em;
+}
+/* line 509, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .mmen li.hasch.openmm > a:after {
+  content: '-';
+  font-size: 2.6em;
+  color: #fff;
+  position: absolute;
+  left: 87.4%;
+  margin-top: -0.4em;
+}
+/* line 518, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .mmen li.hasch ul {
+  position: relative;
+}
+/* line 522, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .mmen li a {
+  color: #fff;
+  display: block;
+  padding: 0.9em 0;
+  font-size: 1.3em;
+}
+/* line 528, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .mmen li:last-child {
+  border: none;
+}
+/* line 531, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .mmen li.ges {
+  background: #fff;
+  text-align: center;
+  border: 1px solid #F5821F;
+  border-radius: 8px;
+}
+/* line 538, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .mmen li.ges a {
+  color: #484848;
+  display: inline-block;
+  padding: 0.7em 0.3em;
+}
+/* line 543, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .mmen .sc .openmm > ul {
+  display: block;
+}
+/* line 546, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .mmen li.hasch > a:after {
+  content: '+';
+  font-size: 2.6em;
+  color: #fff;
+  position: absolute;
+  left: 86%;
+  margin-top: -0.4em;
+}
+/* line 554, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .mmen li.hasch.openmm > a:after {
+  content: '-';
+  font-size: 2.6em;
+  color: #fff;
+  position: absolute;
+  left: 87.4%;
+  margin-top: -0.4em;
+}
+/* line 562, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .hemen li {
+  padding: 0;
+}
+/* line 565, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .proav {
+  margin-top: 2em;
+  display: inline-block;
+  margin-left: 1.1em;
+  color: #fff;
+}
+/* line 571, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .gemcustom a.proav {
+  color: #fff;
+}
+/* line 574, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+.g3fh .gemcustom .proav a {
+  color: #fff;
+}
+@media (max-width: 790px) {
+  /* line 579, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+  .g3fh .deskhead {
+    display: none;
+  }
+  /* line 582, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+  .g3fh .mobhead {
+    display: block;
+    padding: 1em 0 1em 1em;
+    border-bottom: 0.08em solid #484848;
+  }
+}
+@media (max-width: 667px) {
+  /* line 590, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+  .g3fh .mainmenu {
+    display: none;
+  }
+  /* line 593, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+  .g3fh .mob-cent {
+    text-align: center;
+  }
+  /* line 596, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+  .g3fh .vis .cpy {
+    display: none;
+  }
+  /* line 599, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+  .g3fh .cpy2 {
+    display: block;
+    text-align: center;
+  }
+  /* line 603, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+  .g3fh .fm li, .g3fh .mainmenu li {
+    width: auto;
+  }
+  /* line 606, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+  .g3fh .vis {
+    text-align: center;
+    margin: 1em 0;
+  }
+  /* line 610, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_custom.scss */
+  .g3fh .fm li, .g3fh .mainmenu li {
+    width: 100%;
+  }
+}
+/* line 1, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .gh-container nav {
+  border: 0;
+  min-height: 0;
+  background: transparent;
+  border-radius: 0;
+  margin-bottom: 0;
+}
+/* line 8, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .gh-container nav .navbar-collapse {
+  padding: 0;
+}
+/* line 11, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .gh-container .gh-top-strip {
+  background: #f5821f;
+}
+/* line 14, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .gh-container .gh-top-strip .nav {
+  font-size: 0;
+}
+/* line 17, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .gh-container .gh-top-strip .nav > li:first-child a {
+  padding-left: 0;
+}
+/* line 20, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .gh-container .gh-top-strip .nav > li:last-child a {
+  padding-right: 0;
+}
+/* line 23, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .gh-container .gh-top-strip .nav > li a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 12px;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  display: inline-block;
+  line-height: 30px;
+  padding: 0 15px;
+}
+/* line 33, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .gh-container .gh-top-strip .nav > li a .fa {
+  vertical-align: middle;
+  margin-right: 4px;
+}
+/* line 37, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .gh-container .gh-top-strip .nav > li a.home {
+  position: relative;
+  padding-left: 23px;
+  background: #e47516;
+  font-size: 0;
+}
+/* line 43, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .gh-container .gh-top-strip .nav > li a.home:before, .g3fh .gh-container .gh-top-strip .nav > li a.home:after {
+  content: "";
+  display: block;
+  position: absolute;
+}
+/* line 48, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .gh-container .gh-top-strip .nav > li a.home:before {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 10px 9px;
+  top: 7px;
+  left: 11px;
+  border-color: transparent transparent #fff;
+}
+/* line 57, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .gh-container .gh-top-strip .nav > li a.home:after {
+  width: 12px;
+  height: 6px;
+  border: 1px solid #656565;
+  border-width: 0 4px;
+  bottom: 8px;
+  left: 15px;
+  border-color: #fff;
+}
+/* line 66, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .gh-container .gh-top-strip .nav > li a.login-msg {
+  width: 115px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  float: left;
+}
+/* line 73, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .gh-container .gh-logo-strip {
+  padding: 10px 0;
+  z-index: 5;
+}
+/* line 77, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .gh-container .gh-logo-strip .gh-middle-links .nav {
+  float: right;
+}
+/* line 80, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .gh-container .gh-logo-strip .gh-middle-links .nav > li {
+  padding: 0 15px 0 15px;
+}
+/* line 83, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .gh-container .gh-logo-strip .gh-middle-links .nav > li > a {
+  color: #666;
+  font-size: 15px;
+  font-size: 1.5rem;
+  text-transform: capitalize;
+  padding: 0;
+  line-height: 70px;
+}
+/* line 91, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .gh-container .gh-logo-strip .gh-middle-links .nav > li:last-child {
+  padding-right: 0;
+}
+/* line 94, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .gh-container .gh-logo-strip .gh-middle-links .nav > li.dropdown .dropdown-menu {
+  box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.2);
+  border-radius: 0;
+  padding: 0;
+  transition: ease all 0.2s;
+  min-width: 130px;
+  border: 0;
+  margin: 0;
+}
+/* line 103, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .gh-container .gh-logo-strip .gh-middle-links .nav > li.dropdown .dropdown-menu li:not(:last-child) {
+  border-bottom: 1px solid #ddd;
+}
+/* line 106, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .gh-container .gh-logo-strip .gh-middle-links .nav > li.dropdown .dropdown-menu li a {
+  display: block;
+  font-size: 13px;
+  font-size: 1.3rem;
+  color: #666;
+  padding: 8px 10px;
+  transition: ease all 0.2s;
+}
+/* line 114, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .gh-container .gh-logo-strip .gh-middle-links .nav > li.dropdown .dropdown-menu li a:hover {
+  background: #eee;
+}
+/* line 117, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .gh-container .gh-logo-strip .gh-middle-links .nav > li.dropdown > a .caret {
+  margin-left: 5px;
+}
+/* line 120, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .gh-container .gh-logo-strip .gh-middle-links .nav > li.dropdown > .dropdown-menu {
+  opacity: 0;
+  height: 0;
+  visibility: hidden;
+  display: block;
+}
+/* line 126, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .gh-container .gh-logo-strip .gh-middle-links .nav > li.dropdown > .dropdown-menu .caret {
+  border-bottom: 4px solid transparent;
+}
+/* line 129, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .gh-container .gh-logo-strip .gh-middle-links .nav > li.dropdown.open > .dropdown-menu {
+  opacity: 1;
+  height: auto;
+  visibility: visible;
+  top: 58px;
+}
+/* line 135, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .gh-container .gh-logo-strip .gh-middle-links .nav > li.dropdown.open a {
+  background: transparent;
+}
+/* line 138, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .gh-container .gh-logo-strip .gh-middle-links .nav > li:last-child.dropdown > .dropdown-menu, .g3fh .gh-container .gh-logo-strip .gh-middle-links .nav > li:nth-last-child(2).dropdown > .dropdown-menu {
+  left: auto;
+  right: 0;
+}
+/* line 142, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .gh-container .gh-logo-strip .gh-middle-links .nav > li:last-child.dropdown > .dropdown-menu .dropdown-menu, .g3fh .gh-container .gh-logo-strip .gh-middle-links .nav > li:nth-last-child(2).dropdown > .dropdown-menu .dropdown-menu {
+  left: auto;
+  right: 100%;
+  box-shadow: -2px 1px 4px 0px rgba(0, 0, 0, 0.2);
+}
+/* line 147, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .gh-container .gh-logo-strip .gh-middle-links .nav > li.loggedin-user-menu {
+  border: 0;
+}
+/* line 150, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .gh-container .gh-logo-strip .gh-middle-links .nav > li.loggedin-user-menu a.loggedin-user {
+  padding-right: 40px;
+  height: 70px;
+}
+/* line 154, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .gh-container .gh-logo-strip .gh-middle-links .nav > li.loggedin-user-menu i.fa.fa-user-circle {
+  position: relative;
+  margin-left: 15px;
+  position: absolute;
+  right: 0;
+  line-height: normal;
+  height: 30px;
+  width: 30px;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  border: solid 1px #666;
+  border-radius: 50%;
+}
+/* line 168, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .gh-container .gh-logo-strip .gh-middle-links .nav > li.loggedin-user-menu i.fa.fa-user-circle:before, .g3fh .gh-container .gh-logo-strip .gh-middle-links .nav > li.loggedin-user-menu i.fa.fa-user-circle:after {
+  content: "";
+  position: absolute;
+  height: 27.33333%;
+  width: 27.33333%;
+  border-radius: 50%;
+  border: solid 1px #666;
+  top: -27.33333%;
+  bottom: 0;
+  right: 0;
+  margin: auto;
+  left: 0;
+}
+/* line 181, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .gh-container .gh-logo-strip .gh-middle-links .nav > li.loggedin-user-menu i.fa.fa-user-circle:after {
+  top: 27.33333%;
+  width: 43.33333%;
+  border-radius: 50% 50% 0 0;
+}
+/* line 186, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .gh-container .gh-logo-strip .gh-middle-links .nav > li.loggedin-user-menu .user-icon-menu .fa-user-circle.fa-3x {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  margin: auto;
+  border: 0;
+}
+/* line 193, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .gh-container .gh-logo-strip .gh-middle-links .nav > li.loggedin-user-menu .user-icon-menu .fa-user-circle.fa-3x:before, .g3fh .gh-container .gh-logo-strip .gh-middle-links .nav > li.loggedin-user-menu .user-icon-menu .fa-user-circle.fa-3x:after {
+  height: 40%;
+  width: 40%;
+  top: -40%;
+}
+/* line 198, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .gh-container .gh-logo-strip .gh-middle-links .nav > li.loggedin-user-menu .user-icon-menu .fa-user-circle.fa-3x:after {
+  width: 80%;
+  top: 50%;
+}
+@media screen and (max-width: 767px) {
+  /* line 203, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+  .g3fh .gh-container .gh-top-strip .navbar-header {
+    display: none;
+  }
+  /* line 206, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+  .g3fh .gh-container .gh-top-strip .navbar-collapse {
+    display: block !important;
+  }
+}
+/* line 211, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .hemen li.separator-menu {
+  margin-left: 10px;
+}
+/* line 214, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .hemen li li {
+  text-align: center;
+}
+/* line 217, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .hemen li li a {
+  padding-left: 0;
+  white-space: nowrap;
+}
+/* line 221, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .hemen li li a:hover {
+  color: #F5821F;
+}
+/* line 224, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .hemen ul {
+  width: auto;
+  background: #f8f8f8;
+  min-width: 6.2em;
+  border: 1px solid #eaeaea;
+  right: 0;
+}
+/* line 231, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .hemen ul li:first-child > a {
+  border: none !important;
+}
+/* line 234, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .hemen ul li > a {
+  border-top: 0.08em solid #efeeee !important;
+}
+/* line 237, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .hemen .haschild .haschild {
+  position: relative;
+  background: transparent !important;
+}
+/* line 241, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .hemen .haschild .haschild:last-child:hover {
+  border-radius: 0 0 10px 10px;
+}
+/* line 244, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .hemen .haschild .haschild ul {
+  right: 100%;
+  box-shadow: none;
+  background: #f8f8f8;
+}
+/* line 249, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .hemen .haschild .haschild ul a {
+  color: #333;
+}
+/* line 252, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .hemen .haschild .haschild ul a:hover {
+  color: #f5821f;
+}
+/* line 255, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .hemen .haschild .haschild ul li:hover {
+  background: transparent !important;
+}
+/* line 258, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .hemen .haschild .haschild:hover > a {
+  color: #f5821f;
+}
+/* line 262, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .hemen .haschild .haschild > a {
+  padding-left: 40px;
+}
+/* line 265, /home/indhumathi/Documents/infibeam_bennu-git2/plugins/engines/shared_assets/gem-headr/sass/../css/_dropdown_fix.scss */
+.g3fh .hemen .haschild .haschild > a:before {
+  content: "";
+  font-family: FontAwesome;
+  position: absolute;
+  left: 16px;
+  transform: translateY(-50%);
+  top: 50%;
+}
+/* line 4, ../sass/header-footer.scss */
+.g3fh .select-style select {
+  line-height: normal;
+  height: auto;
+  padding: 0 !important;
+}
+@media (max-width: 680px) {
+  /* line 11, ../sass/header-footer.scss */
+  .g3fh .mmen li a > i, .g3fh .mmen li a.home {
+    display: none;
+  }
+}
+@media (min-width: 680px) {
+  /* line 18, ../sass/header-footer.scss */
+  .g3fh .hemen li.separator-menu {
+    border-left: 0.1em solid #eaeaea;
+  }
+}
+/* line 23, ../sass/header-footer.scss */
+.g3fh li, .g3fh div {
+  font-size: 16px;
+}
+/* line 27, ../sass/header-footer.scss */
+.g3fh .gh-container {
+  background: #fff;
+}
+/* line 30, ../sass/header-footer.scss */
+#hd .g3fh .gh-container .row {
+  max-width: none;
+  margin-left: -1.071em;
+  margin-right: -1.071em;
+  width: auto;
+}
+/* line 39, ../sass/header-footer.scss */
+.g3fh footer h5 {
+  font-size: 14px;
+  color: white;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}

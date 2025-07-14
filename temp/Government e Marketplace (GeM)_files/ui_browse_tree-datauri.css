@@ -1,0 +1,354 @@
+.srvc.CompositeService {
+    border: 1px solid #b5b5ff !important;
+    background: #f9f8ff;
+}
+.srvc-home-page .stats-header {
+  margin-bottom: 75px;
+  position: relative; }
+  .srvc-home-page .stats-header span {
+    font-size: 24px;
+    font-size: 2.4rem;
+    padding-right: 10px;
+    background: #fff;
+    padding-right: 10px;
+    position: relative;
+    z-index: 2;
+    margin: 0;
+    line-height: normal;
+    display: inline-block; }
+    .srvc-home-page .stats-header span:before {
+      content: none; }
+  .srvc-home-page .stats-header hr {
+    display: none; }
+  .srvc-home-page .stats-header:before {
+    content: '';
+    height: 7px;
+    background: #eee;
+    width: 100%;
+    position: absolute;
+    top: 12px;
+    bottom: auto;
+    z-index: 1;
+    margin: auto; }
+.srvc-home-page .srvc-list {
+  display: inline-block;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  -ms-flex-wrap: wrap;
+  -webkit-flex-wrap: wrap;
+  flex-wrap: wrap; }
+  .srvc-home-page .srvc-list:after {
+    content: "";
+    display: table;
+    width: 100%;
+    clear: both; }
+  .srvc-home-page .srvc-list .srvc {
+    width: calc(33.33333% - 20px);
+    margin-bottom: 75px;
+    margin-left: 30px;
+    cursor: pointer;
+    position: relative;
+    border: solid 1px #dddddd;
+    transition: box-shadow .3s; }
+    @media only screen and (max-width: 767px) {
+      .srvc-home-page .srvc-list .srvc {
+        width: 100%;
+        margin-left: 0; } }
+    .srvc-home-page .srvc-list .srvc:nth-child(3n+1) {
+      margin-left: 0;
+      clear: left; }
+    .srvc-home-page .srvc-list .srvc .srvc-data {
+      padding: 25px;
+      color: #444; }
+    .srvc-home-page .srvc-list .srvc .srvc-title {
+      border: solid #f7f7f7;
+      border-width: 7px 0 0;
+      padding: 25px;
+      padding-right: 150px;
+      min-height: 100px; }
+      .srvc-home-page .srvc-list .srvc .srvc-title .title {
+        font-weight: 600;
+        font-size: 17px;
+        font-size: 1.7rem;
+        line-height: 1.5;
+        text-transform: capitalize;
+        color: #444;
+        border: 0;
+        background: transparent;
+        padding: 0;
+        margin: 0; }
+    .srvc-home-page .srvc-list .srvc .srvc-image {
+      padding: 5px 0;
+      border: 0;
+      position: absolute;
+      background: #fff;
+      width: 130px;
+      height: 130px;
+      top: -35px;
+      right: 15px;
+      box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.16), 0 0 0 1px rgba(0, 0, 0, 0.08); }
+    .list{
+      padding: 2px
+    }
+    .srvc-home-page .row .srvc .col-md-12 .media .media-left .srvc-image {
+      width: 50px;
+      height: 50px;
+      box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.16), 0 0 0 1px rgba(0, 0, 0, 0.08);}
+    .srvc-home-page .row .srvc .col-md-12 .media .media-body .srvc-desc .description-detail {
+    display: -webkit-box;
+        margin: 0 auto;
+        max-height: 75px;
+        line-height: 1.7;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;}
+    .srvc-home-page .srvc-list .srvc .srvc-desc {
+      border: 0;
+      padding: 15px 15px 25px 15px;
+      min-height: 110px; }
+      .srvc-home-page .srvc-list .srvc .srvc-desc .description-detail {
+        display: -webkit-box;
+        max-width: 400px;
+        height: 70px;
+        margin: 0 auto;
+        line-height: 1.7;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis; }
+        .srvc-home-page .srvc-list .srvc .srvc-desc .description-detail > * {
+          margin: 0; }
+        .srvc-home-page .srvc-list .srvc .srvc-desc .description-detail * {
+          font-size: 14px !important; }
+    .srvc-home-page .srvc-list .srvc:hover {
+      border-color: #bbb;
+      box-shadow: 0 0 11px rgba(33, 33, 33, 0.2); }
+      .srvc-home-page .srvc-list .srvc:hover .srvc-title {
+        border-color: transparent; }
+    .srvc-home-page .srvc-list .srvc service-detail > a {
+      display: block;
+      line-height: 40px;
+      padding: 0 15px;
+      text-align: center;
+      border-top: solid 1px #dddddd;
+      text-decoration: none; }
+    .srvc-home-page .srvc-list .srvc service-detail .gem-popup {
+      text-align: left; }
+      .srvc-home-page .srvc-list .srvc service-detail .gem-popup .service-image {
+        float: left;
+        max-width: 300px;
+        padding: 0 10px 10px 0; }
+      .srvc-home-page .srvc-list .srvc service-detail .gem-popup .service-content h2,
+      .srvc-home-page .srvc-list .srvc service-detail .gem-popup .service-content h3,
+      .srvc-home-page .srvc-list .srvc service-detail .gem-popup .service-content .deliverable-heading {
+        font-weight: 600;
+        text-transform: uppercase;
+        line-height: 1;
+        font-size: 17px;
+        font-size: 1.7rem;
+        color: #222222;
+        display: block;
+        margin-top: 0;
+        margin-bottom: 10px; }
+      .srvc-home-page .srvc-list .srvc service-detail .gem-popup .service-content .deliverable-heading {
+        margin-top: 25px; }
+      .srvc-home-page .srvc-list .srvc service-detail .gem-popup .service-content ul {
+        list-style-type: circle; }
+        .srvc-home-page .srvc-list .srvc service-detail .gem-popup .service-content ul li {
+          margin-bottom: 7px;
+          line-height: 1.7; }
+.srvc-home-page .pagination {
+  margin-right: 15px; }
+  .srvc-home-page .pagination:before, .srvc-home-page .pagination:after {
+    content: none; }
+
+.add-to-cart-popup span {
+  margin: 15px; }
+@media only screen and (min-width: 768px) {
+  .add-to-cart-popup .popup-content {
+    max-width: 500px; } }
+
+#page div[uib-datepicker-popup-wrap] li.uib-button-bar {
+  display: inline-block;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex; }
+  #page div[uib-datepicker-popup-wrap] li.uib-button-bar button {
+    line-height: 30px;
+    background: transparent;
+    color: #666666;
+    border: solid 1px #dddddd;
+    font-weight: normal;
+    font-size: 13px;
+    font-size: 1.3rem; }
+  #page div[uib-datepicker-popup-wrap] li.uib-button-bar > span {
+    display: inline-block;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    width: 66.6666%; }
+    #page div[uib-datepicker-popup-wrap] li.uib-button-bar > span > button {
+      width: 50%; }
+  #page div[uib-datepicker-popup-wrap] li.uib-button-bar > button {
+    width: 33.333333%;
+    margin: 0; }
+#page div[uib-datepicker-popup-wrap] .uib-datepicker-popup:focus {
+  outline: none; }
+#page div[uib-datepicker-popup-wrap] .uib-datepicker-popup .uib-daypicker table {
+  width: auto !important;
+  border: 0 !important; }
+  #page div[uib-datepicker-popup-wrap] .uib-datepicker-popup .uib-daypicker table button.btn {
+    min-width: 0 !important;
+    color: #444 !important;
+    background: transparent !important;
+    padding: 0 !important; }
+    #page div[uib-datepicker-popup-wrap] .uib-datepicker-popup .uib-daypicker table button.btn span {
+      border: solid 1px #ddd;
+      padding: 10px;
+      display: block;
+      border-radius: 3px;
+      line-height: normal; }
+      #page div[uib-datepicker-popup-wrap] .uib-datepicker-popup .uib-daypicker table button.btn span.text-muted {
+        border-color: transparent;
+        color: #ccc; }
+    #page div[uib-datepicker-popup-wrap] .uib-datepicker-popup .uib-daypicker table button.btn.active {
+      background: #eee !important; }
+  #page div[uib-datepicker-popup-wrap] .uib-datepicker-popup .uib-daypicker table td {
+    padding: 0 !important; }
+  #page div[uib-datepicker-popup-wrap] .uib-datepicker-popup .uib-daypicker table th {
+    padding: 0 !important; }
+    #page div[uib-datepicker-popup-wrap] .uib-datepicker-popup .uib-daypicker table th small {
+      font-size: 12px !important; }
+  #page div[uib-datepicker-popup-wrap] .uib-datepicker-popup .uib-daypicker table tbody tr {
+    background: transparent !important; }
+    #page div[uib-datepicker-popup-wrap] .uib-datepicker-popup .uib-daypicker table tbody tr:first-child td {
+      padding-top: 15px !important; }
+    #page div[uib-datepicker-popup-wrap] .uib-datepicker-popup .uib-daypicker table tbody tr:last-child td {
+      padding-bottom: 5px !important; }
+    #page div[uib-datepicker-popup-wrap] .uib-datepicker-popup .uib-daypicker table tbody tr td:last-child {
+      padding-right: 5px !important; }
+    #page div[uib-datepicker-popup-wrap] .uib-datepicker-popup .uib-daypicker table tbody tr td:first-child {
+      padding: 10px !important; }
+  #page div[uib-datepicker-popup-wrap] .uib-datepicker-popup .uib-daypicker table td {
+    border: 0 !important;
+    background: transparent !important; }
+    #page div[uib-datepicker-popup-wrap] .uib-datepicker-popup .uib-daypicker table td:first-child {
+      border: 0 !important; }
+
+.service_indcident_report_iframe_popup.gem-popup .popup-content {
+  top: 5vh; }
+  @media only screen and (min-width: 768px) {
+    .service_indcident_report_iframe_popup.gem-popup .popup-content {
+      width: 1250px; } }
+  .service_indcident_report_iframe_popup.gem-popup .popup-content .popup-message {
+    max-height: 90vh;
+    padding: 0; }
+    .service_indcident_report_iframe_popup.gem-popup .popup-content .popup-message iframe {
+      width: 100%;
+      border: 0;
+      height: 80vh; }
+
+.browse-nodes-actions {
+    margin-top: 10px;
+    position: relative;
+}
+.stats-header > h5 {
+  font-size: 1em;
+}
+.browse-nodes-actions .nav-pills>li > a {
+    padding: 5px 8px;
+    margin: 0 5px;
+    font-size: 0.9em;
+    font-weight: 500;
+}
+
+.item-wrap{
+  white-space: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+
+ui-browse-nodes-search .ui-select-bootstrap .ui-select-choices-row>span {
+  white-space: normal;
+}
+
+.srvc-home-page .srvc.list.row {
+width: 100%;
+}
+
+.srvc-home-page .srvc.list.row button {
+width: 100%;
+display: flex;
+flex-direction: row;
+align-items: center;
+margin: 0;
+position: relative;
+}
+
+.srvc-home-page .srvc.list.row{
+margin: 5rem 0;
+}
+
+.srvc-home-page .srvc.list.row button .srvc-desc .description-detail p{
+white-space: normal;
+color: #000;
+display: -webkit-box;
+margin: 0 auto;
+line-height: 1.7;
+-webkit-line-clamp: 3;
+-webkit-box-orient: vertical;
+overflow: hidden;
+text-overflow: ellipsis;
+}
+
+.srvc-home-page .srvc.list.row button .srvc-desc .description-detail ul li {
+color: #000;
+}
+
+.srvc-home-page .srvc.list.row button service-detail {
+margin-left: auto;
+}
+
+.srvc-home-page .srvc.list.row button .media .media-body {
+padding: 3rem 6rem;
+max-width: 960px;
+text-align: left;
+}
+
+.srvc-home-page .srvc.list.row button .media {
+display: flex;
+}
+
+.srvc-home-page .srvc.list.row button .media .media-left {
+position: absolute;
+top: -15%;
+}
+
+.srvc-home-page .srvc.list.row button > div {
+width: 100%;
+}
+
+.gem-popup.detailed-serv-desc .popup-content .popup-message .service-data {
+    display: flex;
+}
+
+.gem-popup.detailed-serv-desc .popup-content .popup-message .service-data .service-content {
+    text-align: left;
+    white-space: normal;
+}
+
+.gem-popup.detailed-serv-desc .popup-content .popup-message .service-data .service-content ul li {
+list-style-position: inside;
+list-style: none;
+}

@@ -1,0 +1,12 @@
+(function (global) {
+  var BAB = global.BAB || {};
+  BAB.endpoints = BAB.endpoints || {"site":"https://mkp.gem.gov.in/","site_internal":"http://gem-site6/","admin":"https://admin-mkp.gem.gov.in/","admin_internal":"http://gem-admin/","cms":"https://cms-mkp.gem.gov.in/","cms_internal":"http://gem-cms/","gem_rating":"https://mkp.gem.gov.in/gvr","gem_rating_internal":"http://gem-rating/gvr","main_portal":"https://gem.gov.in","bid_web":"https://bid-mkp.gem.gov.in","bid_api":"https://bid-mkp.gem.gov.in/api","bid_api_internal":"http://gem-bid/api","base_domain":"gem.gov.in"};
+  BAB.endpoints.app_url= function(app, pathname){
+    var domain = BAB.endpoints[app] || '//'+BAB.endpoints.base_domain;
+    domain = domain.replace(/\/$/, '')
+    pathname = pathname.replace(/^\//, '')
+    return domain + '/' + pathname;
+  }
+  global.BAB = BAB;
+})(window);
+

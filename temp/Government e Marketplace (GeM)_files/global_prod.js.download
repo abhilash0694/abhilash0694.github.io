@@ -1,0 +1,886 @@
+//Global
+window.BAB = window.BAB || {};
+window.BAB.arx_auto_login_timeout = 5000;
+/*window.onerror = function(message, url, lineNumber) {
+  if(console && console.error){
+    console.error("[H2O2] Err! " + message + "\nIn file "+ url +"\n line number: "+ lineNumber);
+  }
+  return true;
+};
+*/
+
+
+//GIGW MENUS
+$(function(){
+
+  if(window.location.pathname == '/parking'){
+    replaceHeaderFromCache();
+    $(".p-parking-index .gh-container ul.inline-menu.text-right.hemen").css("visibility", "visible")
+  }
+
+
+  function addKeyboardNav(element){
+    element.keyup(function (e) {
+      $(this).addClass('hover');
+    });
+    element.find("li").focusout(function(e){
+      $(this).removeClass('hover');
+      $(this).trigger('mouseover');
+
+      //$('.haschild').removeClass('hover');
+    });
+
+    element.find('li:last-child').on('mouseover',function(e){
+      $(this).parent().parent().removeClass('hover');
+    })
+  }
+
+  addKeyboardNav($('.haschild'));
+
+
+
+  //if(window.location.pathname == '/registration/signup') addGIGWHeaderMenus();
+
+  $(document).bind('logged-out', function(event) {
+    addGIGWHeaderMenus();
+  });
+
+  function addGIGWHeaderMenus(){
+    console.log('adding . menu');
+    var topRightHeader = $('#hd .topse .headsh.pull-right')
+    /*var toggler = $(
+        '<ul class="inline-menu">' +
+          '<li><small><a class="skip-to-main" href="#content-slot" title="Skip to Main Content">Skip to Main Content</a></small>&nbsp;&nbsp;<span>|</span></li>' +
+          '<li>' +
+            '<a href="# " title="Decrease Font Size" class="fmm ">A- </a>' +
+            '<a href="# " title="Reset Font Size" class="fd "> A </a>' +
+            '<a href="# " title="Increase Font Size" class="fp "> A+</a>' +
+            '<span title="High Contrast" class="fdn ">T</span>' +
+          '</li>' +
+        '</ul>'
+        )
+    var lang = $('#select_site_language').parent();
+    topRightHeader.append(toggler);
+    $('<li></li>').append(lang).appendTo(toggler);
+
+    var needHelpMenu = $(
+      '<li class="dropdown on-focus">'+
+        '<a href="#" class="btn-need_help dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Need Help ? <span class="caret"></span></a>'+
+        '<ul class="dropdown-menu">'+
+          '<li><a href="https://gem.gov.in/userFaqs" title="FAQs">FAQs</a></li>'+
+          '<li><a href="https://gem.gov.in/feedback" title="Feedback" target="_blank">Feedback</a></li>'+
+          '<li><a href="https://gem.gov.in/gemtickets/create" title="Raise a Ticket">Raise a Ticket</a></li>'+
+          '<li><a href="https://gem.gov.in/help" title="Document Help">Document Help</a></li>'+
+          '<li class="last-style"><a href="https://gem.gov.in/contactUs" title="Contact Us">Contact Us</a></li>'+
+        '</ul>'+
+      '</li>'
+    );
+
+    needHelpMenu.appendTo(toggler);*/
+    addKeyboardNav($('.on-focus'));
+
+    $('a.skip-to-main').click(function(e){
+      e.preventDefault();
+      $('html, body').animate({
+          scrollTop: ($('#bd').offset().top)
+      },500);
+    })
+
+    $('.fd').click(function(e) {
+        e.preventDefault();
+        $('html').css('font-size', '10px');
+    });
+
+    $('.fdn').click(function(e) {
+        e.preventDefault();
+        $('body').toggleClass('nightmode');
+    });
+
+    var step = 10/14;
+    $('.topse .fmm').click(function(e) {
+        $('.fp').css("opacity", "1");
+        e.preventDefault();
+        var str = $('html').css('font-size');
+        var res = str.replace("px", "");
+        if (res > 7.15) {
+            $('html').css('font-size', parseFloat(res) - step);
+        } else {
+            $('.fmm').css("opacity", " 0.3");
+        }
+    });
+    $('.fp').click(function(e) {
+        e.preventDefault();
+        $('.fmm').css("opacity", "1");
+        var str = $('html').css('font-size');
+        var res = str.replace("px", "");
+        if (res < 17.86) {
+            $('html').css('font-size', parseFloat(res) + step);
+        } else {
+            $('.fp').css("opacity", " 0.3");
+        }
+    })
+  }
+
+
+})
+
+
+  var MSI_COOKIE_KEY = "__msi__";
+  var MSI_LOCAL_STORAGE_KEY = "g3fh-html-msi";
+  var PARKING_LOCAL_STORAGE_KEY = "g3fh-html";
+
+  function isHeaderCacheValid(){
+    var cookie_msi = $.cookies.get(MSI_COOKIE_KEY);
+    var ls_msi = localStorage.getItem(MSI_LOCAL_STORAGE_KEY);
+    return(ls_msi && ls_msi == cookie_msi);
+  }
+
+  function setHeaderToCache(){
+    if(window.location.pathname != '/parking'){
+      var cookie_msi = $.cookies.get(MSI_COOKIE_KEY);
+      if(cookie_msi && !isHeaderCacheValid()){
+        localStorage.setItem(MSI_LOCAL_STORAGE_KEY, cookie_msi);
+        var headerHtml = $("#hd .g3fh").html();
+        localStorage.setItem(PARKING_LOCAL_STORAGE_KEY, headerHtml);
+      }
+    }
+  }
+
+  function replaceHeaderFromCache(){
+    if(isHeaderCacheValid()){
+      var headerHtml = localStorage.getItem(PARKING_LOCAL_STORAGE_KEY);
+      if(headerHtml && headerHtml.length > 0)
+        $("#hd .g3fh").html(headerHtml);
+    }
+  }
+
+
+
+
+
+$(document).bind('logged-out', function(event) {
+  if ($.cookies.get('make-model-info-shown') == true){
+      $.cookies.del('make-model-info-shown');
+  }
+  setHeaderToCache();
+});
+
+var inIframe = (function() { try { return window.self !== window.top; } catch (e) { return true; } })();
+//This event will be triggered on BrowseNode search page(including home page).
+$(document).bind("browse-node-search", function(event,filter){
+  //use filter.browse_node_id to get current BrowseNode's id
+  if ($("#bd #facets").length == 0) {
+    $("#search-result-items").addClass("md-bl-gd-4").removeClass("md-bl-gd-3");
+  }
+
+  if ($('.multiple-make-model').length==0){
+    var text = $('.make_model_popup_markup .multiple-make-model-popup-txt:first').text() || "Multiple make and model selection is not allowed at a time." 
+    $("<div class='multiple-make-model' scrolltop='0' scrollleft='0' style='width: auto; min-height: 0px; height: auto;'>" + text + "</div>").dialog({
+      modal: true,
+      autoOpen: false,
+      dialogClass: "multiple-make-model-dialog",
+      buttons: [{
+        text: $('.make_model_popup_markup .ok-btn-text:first').text(),
+        click: function() {
+          $(this).dialog("close");
+        },
+      }]
+    });
+  }
+
+
+  if ($('.first-make-model').length==0){
+    var text = $('.make_model_popup_markup .first-make-model-popup-txt:first').text() || "PAC buying needs specific approval of competent authority and bid submissions will be only for the selected make and model." 
+    $("<div class='first-make-model' scrolltop='0' scrollleft='0' style='width: auto; min-height: 0px; height: auto;'>" + text + "</div>").dialog({
+      title: "PAC Notice",
+      width: "600px",
+      dialogClass: "first-make-model-dialog",
+      modal: true,
+      autoOpen: false,
+       buttons: [{
+         text: $('.make_model_popup_markup .ok-btn-text:first').text(),
+         click: function() {
+           $(this).dialog("close");
+           $('#is_pac_val').val(true);
+           $('.buying_intent').submit();
+         },
+       }]
+    });
+  }
+
+
+$('#is_pac').click(function(e){
+  if (!$(this).hasClass('selected')){
+    if ((($('#facet-make li.selected').length)>1) || (($('#facet-model li.selected').length)>1)){
+      $('#facet-make li.selected').each(function(){
+        $(this).removeClass('selected');
+        value=$(this).attr('data-value');
+        w=$(this).attr('data-facet-name');
+        IB.nav.force_remove_value(w, value);
+      });
+      $('#facet-model li.selected').each(function(){
+        value=$(this).attr('data-value');
+        w=$(this).attr('data-facet-name');
+        IB.nav.force_remove_value(w, value);
+      });
+      $(".multiple-make-model").dialog("open");
+      $.address.value(IB.nav.url_params());
+    }
+  }
+  if ($.cookies.get('make-model-info-shown') !=true && !$(this).hasClass('selected'))
+  {
+    $.cookies.set('make-model-info-shown',true);
+    $(".first-make-model").dialog("open"); 
+    e.preventDefault();
+    return false;
+  }
+});
+
+$('#facet-make  li').click(function(e){ 
+  if(($('#facet-make li.selected').length)==1 && $('#is_pac').hasClass('selected') && !$(this).hasClass('selected')){
+   e.preventDefault();
+   if (!$('.multiple-make-model').dialog('isOpen')){ 
+    $(".multiple-make-model").dialog("open");
+  } 
+   return false;
+  } 
+});
+
+$('#facet-model  li').click(function(e){ 
+  if(($('#facet-model li.selected').length)==1 && $('#is_pac').hasClass('selected') && !$(this).hasClass('selected')){
+   e.preventDefault();
+  if (!$('.multiple-make-model').dialog('isOpen')){ 
+    $(".multiple-make-model").dialog("open");
+  }
+   return false;
+  } 
+}); 
+
+});
+
+if(!inIframe){
+  if(window.location.pathname == '/' && $.cookies.get('admin_mode') !== true){
+    //window.location.href = 'https://gem.gov.in/';
+    window.location.href = '/market';
+  }
+  $(function(){
+    if(!$('body').hasClass('signed-in-user') && (/https:\/\/bestprice\.gem\.gov\.in/.test(document.referrer) || /https:\/\/fulfilment\.gem\.gov\.in/.test(document.referrer) || (/https:\/\/admin-mkp\.gem\.gov\.in/.test(document.referrer) || /https:\/\/cms-mkp\.gem\.gov\.in/.test(document.referrer)))) {
+      window.location = "/login?redirecturl=" + window.location.pathname;
+    }
+  })
+}
+//This event will be triggered on variant selection in product detail page.
+$(document).bind("variant_changed", function(event,variant_id){
+  $('.seller-info table').find('td').filter(function(){var me = $(this); return $.trim(me.text()) == '0';}).each(function(){$(this).html("NA");})
+});
+
+$(function() {
+  if (!($("body").hasClass("buyer-user") || $("body").hasClass("buyer_indentor-user"))) {
+    $(".shopping-cart").remove();
+  }
+});
+$(document).on("click.cart", ".shopping-cart-form .use-shopping-cart", function(e) {
+  e.preventDefault();
+  var self = $(this);
+  var href = self.attr("href").replace("next=%2F%23cart&", "" + encodeURIComponent("next=/market#cart") + "&");
+  document.location.href = href;
+  return false;
+});
+(function openFlyout() {
+  var disableFlyout = window.location.pathname.indexOf("checkout") !== -1;
+  var cartInHash = /#cart\b/.test(document.location.hash);
+  if (!disableFlyout && (cartInHash || $.cookies.get("addToCartWithConsignees"))) {
+    $(document).bind("mi_mode", function(e, purchase_id) {
+      $(function() {
+        $("#hd .cart-wrapper a.shopping-cart:first").trigger("click");
+      });
+    });
+  }
+  if (cartInHash) {
+    document.location.hash = document.location.hash.replace(/#cart\b/g, "");
+  }
+  $.cookies.del("addToCartWithConsignees");
+})();
+$(document).bind("logged-in", function(event, user) {
+  $("#hd .signup").remove();
+  $(".buyer-signup").remove();
+  if ($.cookies.get("post_name")) {
+    $(".select-post").html($.cookies.get("post_name"));
+  }
+  $(".select-post").removeClass("hide");
+  setHeaderToCache();
+/*
+  $(document).on("click", "[href='/logout']", function(e) {
+    e.preventDefault();
+    $.ajax({url:"https://sso.gemorion.org/ARXSSO/oauth/logout?client_id=131804060198305", timeout:1500}).always(function() {
+      document.location.pathname = "/logout";
+    });
+    return false;
+  });
+  */
+});
+$(document).bind("product_detail_page", function(event, catalog_id) {
+  $("#xsell .grid-view").addClass("horz-list block-grid md-bl-gd-4 sm-bl-gd-3 xs-bl-gd-2");
+});
+$(document).ready(function() {
+  if(window.location.pathname == '/printer-ink-cartridges/search' && $("body").hasClass('buyer-user')){
+    window.location.pathname = '/printer-and-facsimile-and-photocopier-supplies-oem-cartridge-consumable/search'
+  }
+  if(window.location.pathname == '/desktops/search' && $("body").hasClass('buyer-user')){
+    window.location.pathname = '/computers-desktop-computer/search'
+  }
+  if(window.location.pathname == '/notebook-computers-laptop/search' && $("body").hasClass('buyer-user')){
+    window.location.pathname = '/computers-0806nb/search'
+  }
+  if(window.location.pathname == '/all-in-one/search' && $("body").hasClass('buyer-user')){
+    window.location.pathname = '/computers-0806aio/search'
+  }
+  if(window.location.pathname == '/domestic-appliances-and-supplies-and-consumer-electronic-products-consumer-electronics-audio-and-visual-equipmentold-television/search' && $("body").hasClass('buyer-user')){
+    window.location.pathname = '/domestic-appliances-and-supplies-and-consumer-electronic-products-consumer-electronics-audio-and-visual-equipment-televisionsold/search'
+  }
+  if(window.location.pathname == '/printer-or-photo-copier-paper/search' && $("body").hasClass('buyer-user')){
+    window.location.pathname = '/writing-and-printing-paper-plain-copier-paper/search'
+  }
+  if(window.location.pathname == '/tablets/search' && $("body").hasClass('buyer-user')){
+    window.location.pathname = '/computers-0912tc/search'
+  }
+  if(window.location.pathname == '/computer-printer-printer/search' && $("body").hasClass('buyer-user')){
+    window.location.pathname = '/computer-printer-0901print/search'
+  }
+  if(window.location.pathname == '/domestic-appliances-and-supplies-and-consumer-electronic-products-consumer-electronics-audio-and-visual-equipment-televisionsold/search' && $("body").hasClass('buyer-user')){
+    window.location.pathname = '/domestic-appliances-and-supplies-and-consumer-electronic-products-consumer-electronics-audio-and-visual-equipmentold-28051-tv/search'
+  }
+  if(window.location.pathname == '/trolley-bags-office-bags,-suitcase,-brief-case/search' && $("body").hasClass('buyer-user')){
+    window.location.pathname = '/luggage-and-handbags-and-packs-and-cases-luggage-suitcase-and-briefcase/search'
+  }
+  if(window.location.pathname == '/multimedia-projectors/search' && $("body").hasClass('buyer-user')){
+      window.location.pathname = '/projectors-and-supplies-28052-mmp/search'
+  }
+  if(window.location.pathname == '/computer-workstation/search' && $("body").hasClass('buyer-user')){
+      window.location.pathname = '/computers-1212ws/search'
+  }
+  if ($("html").data("logged-in") == true) {
+    $("div.logo-top-links div.logo a").attr("href", "/dashboard/index");
+  }
+});
+$(document).bind("checkout-confirmed", function(event, order) {
+});
+$(function() {
+  var search_box = $("#hd #search"), select = search_box.find(".search-category");
+  select.children().not('[data-bn-url="home"]').hide();
+});
+(function($) {
+  var DEFAULT_OPTIONS = {height:300};
+  $.fn.viewMore = function(options) {
+    var options = $.extend({}, options, DEFAULT_OPTIONS);
+    return this.each(function() {
+      var wrapper = $(this);
+      if (!wrapper.hasClass("collapsible") && wrapper.height() > options.height) {
+        var linkStyle = "text-transform: uppercase; color: #0085c3; font-size: 13px; font-size: 1.3rem; padding: 10px 0; width: 100%; display: block; font-weight: 600; transition: ease all .25s; bottom: 0;";
+        var viewMoreText = $("#view-more-less-markup .view-more-text:first").text() || "View more"
+        var viewLessText = $("#view-more-less-markup .view-less-text:first").text() || "View less"
+        var viewMore = $("<a/>", {"class":"view-more-link hide", "text":viewMoreText, "href":"#", "style":linkStyle});
+        var viewLess = $("<a/>", {"class":"view-less-link hide", "text":viewLessText, "href":"#", "style":linkStyle});
+        wrapper.addClass("collapsible").append(viewMore).append(viewLess);
+        var toggleViewMore = function(e) {
+          e.preventDefault();
+          if (wrapper.hasClass("collapsed")) {
+            wrapper.removeClass("collapsed");
+            wrapper.css("max-height", "none");
+            viewMore.addClass("hide");
+            viewLess.removeClass("hide");
+          } else {
+            wrapper.addClass("collapsed");
+            wrapper.css("max-height", "" + options.height + "px");
+            viewMore.removeClass("hide");
+            viewLess.addClass("hide");
+          }
+          return false;
+        };
+        viewMore.on("click.view_more", toggleViewMore).trigger("click.view_more");
+        viewLess.on("click.view_less", toggleViewMore);
+      }
+    });
+  };
+})(bjQuery);
+$(document).bind("product_detail_page", function(event, catalog_id) {
+  $("#golden-parameters").viewMore({height:250});
+});
+$(document).bind("browse-node-search", function(event, filter) {
+  $("#l1-search .golden-params-container").viewMore({height:250});
+});
+
+/** l1 item accordion */
+$(document).bind("browse-node-search", function (event, filter) {
+  var l1 = $('#l1-search');
+  var list = l1.find('ul.l1-items')
+  var items = list.find('> li');
+  if (items.length > 1) {
+    items.each(function () {
+      var item = $(this);
+      var title = $('<div>', {
+        'html': item.find('.variant-title').text(),
+        'class': 'item-title'
+      });
+      var price = $('<div>', {
+        'html': item.find('.variant-final-price').html(),
+        'class': 'item-price'
+      });
+      var header = $('<h3>', {
+        'class': 'item-header'
+      }).append(title).append(price);
+      item.before(header);
+      header.after(item.wrap('<div>').parent());
+    });
+    list.accordion({
+      active: items.length - 1,
+      collapsible: true,
+      heightStyle: 'content',
+      autoHeight: false,
+      navigation: true,
+      icons: {
+        "header": "ui-icon-caret-1-e",
+        //"headerSelected": "ui-icon-caret-1-s"
+        "headerSelected": "ui-icon-blank"
+      }
+    });
+  }
+});
+$(document).bind("product_detail_page", function(event, catalog_id) {
+  var trimLength = 100;
+  $(function() {
+    $(".delivery-locations-data").each(function() {
+      var me = $(this);
+      if (!me.hasClass("truncated")) {
+        var c = $.trim(me.html());
+        if (c.length > trimLength - 3) {
+          me.attr("title", me.text()).html(c.substr(0, trimLength) + "...");
+          me.addClass("truncated");
+        }
+      }
+    });
+  });
+});
+/*
+(function(global, $) {
+  global.BAB.Tray = function() {
+    var addCount = function(tab, count) {
+      count = count || 0;
+      if ((countSpan = tab.find(".item-count")).length) {
+        countSpan.text(count);
+      } else {
+        countSpan = $("<span>", {"class":"item-count", "text":count});
+        tab.append(countSpan);
+      }
+    };
+    var initHistory = function(tray) {
+      var historyPane = tray.find(".product-history").closest(".tab-pane"), historyTab = $('a[href="#' + historyPane.attr("id") + '"]');
+      addCount(historyTab, Math.min(tray.find(".product-history").data("num-size"), BAB.productHistory.load().length - $("#product-detail-page").length));
+    };
+    var initCompare = function(tray) {
+      var comparePane = tray.find(".compare-bar-strip").closest(".tab-pane"), compareTab = $('a[href="#' + comparePane.attr("id") + '"]');
+      if (typeof COMPARE !== "undefined") {
+        addCount(compareTab);
+        updateCompareBar = function() {
+          comparePane.find(".compare-bar-strip").html($(".compare-bar").remove().first());
+          browse_node_id = comparePane.find(".compare-button a").data("browse-node-id");
+          addCount(compareTab, COMPARE.getCount(browse_node_id));
+          BAB.initProducts();
+        };
+        var showAndUpdateCompareBar = function() {
+          compareTab.click();
+          updateCompareBar();
+        };
+        $(document).bind("compare-bar-generated", function() {
+          updateCompareBar();
+        }).bind("item-added-to-compare", showAndUpdateCompareBar).bind("item-removed-from-compare", showAndUpdateCompareBar);
+        $(".compare").click(function() {
+          var me = $(this);
+          $(this).find("a").first().attr("data-clicked",false);
+          if (me.hasClass("disabled")) {
+            if (compareShowErrorMsg) {
+              compareShowErrorMsg(this);
+            }
+          }
+        });
+      } else {
+        compareTab.parent().addClass("disabled").attr("href", "#");
+        compareTab.click(function(e) {
+          e.preventDefault();
+          return false;
+        });
+      }
+    };
+    var initTray = function() {
+      var tray = $(".tray").removeClass("hide").addClass("sticky").find(".carousel-widget").find(">.nav-tabs").append('<li class="toggle"></li>').click(function(event) {
+        $(this).closest(".tray").addClass("maximized");
+        $(this).closest(".carousel-widget").find(".tab-content").slideDown();
+        BAB.initProducts();
+      }).find(".toggle").click(function(event) {
+        $(this).closest(".tray").toggleClass("maximized");
+        $(this).closest(".carousel-widget").find(".tab-content").slideToggle();
+        return false;
+      }).end().end().find(".tab-content").hide().end().end();
+      initHistory(tray);
+      initCompare(tray);
+      var getTrayBreakpoint = function() {
+        return $(document).height() - $(window).height() - $("#ft").height();
+      };
+      var $trayBp = getTrayBreakpoint();
+      $(window).on("resize", function() {
+        $trayBp = getTrayBreakpoint();
+      }).on("scroll", function() {
+        $trayBp > $(window).scrollTop() - tray.height() ? tray.addClass("sticky") : tray.removeClass("sticky");
+      });
+    };
+    $('.tray a[data-toggle="tab"]').on("click", function(e) {
+      var slider = $($(e.target).attr("href")).find(".slick-slider")[0];
+      if (slider) {
+        slider.slick.setPosition();
+      }
+    });
+    return{init:function() {
+      initTray();
+    }};
+  }();
+})(window, bjQuery);
+enquire.register(media.medium_up, {match:function() {
+  $(document).bind("browse-node-search product_detail_page", function() {
+    if(window.BAB && BAB.Tray && $.cookies.get('user_email')) {
+      BAB.Tray.init();
+    }
+  });
+}, unmatch:function() {
+}});
+*/
+$(document).bind("shopping_cart", function() {
+  $("#shopping-cart-page").find(".delete-item").unbind();
+  $(document).on("click.cart", ".shopping-cart-form .use-shopping-cart", function(e) {
+    e.preventDefault();
+    var self = $(this);
+    var href = self.attr("href").replace("next=%2F%23cart&", "" + encodeURIComponent("next=/market#cart") + "&");
+    document.location.href = href;
+    return false;
+  });
+});
+$(function() {
+  $("#facets h6").append("<span class='facet-toggle'></span>");
+  $("#facets .facet:not('.browse_node') h6").click(function() {
+    $(this).toggleClass("spin").siblings("ul,#range_as_slider").slideToggle(500);
+  });
+  $("#facets > .facet > h6").click(function(event, dontAnimate) {
+    var facets = $(this).siblings();
+    if(dontAnimate) facets.toggle();
+    else facets.slideToggle(500);
+  });
+  $(document).on("click", "#currency-frame .select-wrapper", function() {
+    $(this).toggleClass("stylable-select");
+  });
+  $("#compare .variant-images").unslick();
+
+  var screen_size = $.cookies.get("__bp__");
+  if (screen_size == "small") {
+    if (!$("#compare").length) {
+      $("table").wrap("<div style='overflow-x:auto;'></div>");
+    }
+  }
+});
+$(document).bind("browse-node-search", function(event, filter) {
+  enquire.register(media.small, {match:function() {
+    $(".search-summary .search-views").find(".list-view").trigger("click");
+    $("#search-result-items").addClass("grid-view horz-list block-grid xs-bl-gd-2");
+  }, unmatch:function() {
+    $(".search-summary .search-views").find(".grid-view").trigger("click");
+  }});
+});
+$.cookies.set("pref", {search_view_type:$.cookies.get("__bp__") === "small" ? "list-view" : "grid-view"});
+(function($) {
+  $(function() {
+    enquire.register(media.large, {match:function() {
+      $("#hd .navbar-nav li.dropdown").hoverIntent({over:function() {
+        $(this).addClass("open");
+      }, out:function() {
+        $(this).removeClass("open");
+      }, timeout:300}).find("a").unbind("click.bs").on("click.ct", function(e) {
+        var me = $(this);
+        if (me.attr("href") != "#") {
+          e.stopPropagation();
+          return true;
+        }
+        return false;
+      });
+    }, unmatch:function() {
+      $(window).unbind("scroll.sh");
+      $("#hd .navbar-nav li.dropdown").unbind("mouseover").unbind("mouseleave").unbind("click.ct");
+    }});
+    var nav_header = $(".navbar-header");
+    $("<a/>", {"class":"navbar-toggle shopping-cart", href:"/my_save_list/shopping_cart", html:'<span class="glyphicon glyphicon-shopping-cart"></span>'}).appendTo(nav_header);
+    var toplinks_toggle = $("<button/>", {type:"button", "class":"navbar-toggle navbar-toplinks-toggle", "data-toggle":"collapse", "data-target":".navbar-toplinks-collapse", html:'<span class="glyphicon glyphicon-user"></span>'});
+    toplinks_toggle.appendTo(nav_header);
+    var toplinks_ul = $('<ul class="nav navbar-nav" style="display: none;"></ul>');
+    $(".logo-top-links .top-links a").each(function(i, toplink) {
+      var tl = $(toplink);
+      var tl_li = $("<li>").html(tl.clone()).appendTo(toplinks_ul);
+      if (tl.hasClass("login")) {
+        tl_li.addClass("login-tl");
+      }
+    });
+    var toplinks_navbar = $('<div class="collapse navbar-collapse navbar-toplinks-collapse"></div>').append(toplinks_ul).appendTo($(".header-menu > .navbar"));
+    $("<button/>", {type:"button", "class":"navbar-toggle navbar-search-toggle", "data-toggle":"collapse", "data-target":".navbar-search-collapse", html:'<span class="glyphicon glyphicon-search"></span>'}).appendTo(nav_header);
+    var home_link = "/";
+    if ($("html").attr("lang") == "ar") {
+      home_link = "/ar";
+    }
+    $("<a/>", {"class":"navbar-toggle home", href:home_link}).appendTo(nav_header);
+    var search_navbar = $('<div class="collapse navbar-collapse navbar-search-collapse"></div>').appendTo($(".header-menu > .navbar"));
+    $(".navbar-toggle").click(function() {
+      $(".navbar-collapse.in").not($(this).data("target")).removeClass("in").addClass("collapse");
+    });
+    $(document).bind("logged-in", function(e) {
+      toplinks_toggle.addClass("user-logged-in");
+    });
+    enquire.register(media.small, {match:function() {
+      search_navbar.append($(".search-bar"));
+      toplinks_navbar.find("ul").show();
+    }, unmatch:function() {
+      $(".search-bar").appendTo($(".search-bar-container"));
+      toplinks_navbar.find("ul").hide();
+    }});
+    $("#hd li a[href$='shopping-cart']").addClass("shopping-cart");
+    $("#set_country").change(function() {
+      window.location = $(this).val();
+    });
+  });
+  $(document).bind("item-added-to-compare item-removed-from-compare", function(event, browse_node_id) {
+    // var compare_cookie = $.cookies.get("compare");
+    // var ln = $.cookies.get("_ln");
+    // var $compare_lnk = $(".top-links .compare");
+    // if (compare_cookie ) {
+    //   $.each(compare_cookie, function(bn_id, var_ids) {
+    //     if (var_ids && var_ids.length > 0) {
+    //       $compare_lnk.attr("href", (ln == "ar" ? "/" + ln : "") + "/products/compare?browse_node_id=" + bn_id);
+    //       $compare_lnk.removeClass("hide");
+    //     } else {
+    //       $compare_lnk.addClass("hide");
+    //     }
+    //   });
+    // }
+  });
+})(bjQuery);
+$.fn.stylableSelect = function(options) {
+  return this.each(function() {
+    var $select = $(this);
+    if ($select.attr("data-stylable-select") == "true") {
+      return;
+    }
+    $select.attr("data-stylable-select", "true");
+    var $wrapper = $('<div class="select-wrapper" style="position:relative;"></div>'), $title = $('<div tabindex="0" class="' + ($select.attr("class") || "") + ' select-show">' + $select.find("option:selected").text() + "</div>"), $ul = $('<ul class="select-ul" style="position:absolute;"></ul>');
+    $select.find("option").each(function(i) {
+      $ul.append('<li data-index="' + i + '" ' + ($(this).is(":selected") ? 'selected="selceted"' : "") + ">" + $(this).text() + "</li>");
+    });
+    $wrapper.append($title).append($ul).insertAfter($select.hide());
+    $ul.on("click", "li", function() {
+      $select.find("option").eq(parseInt($(this).data("index"))).prop("selected", true).closest("select").trigger("change");
+      $title.text($(this).addClass("selected").text());
+      $ul.find("li").removeClass("selected");
+      $ul.slideUp();
+    }).hide();
+    $title.click($ul.slideToggle.bind($ul)).blur($ul.slideUp.bind($ul));
+  });
+};
+$.fn.add_placeholder = function(options) {
+  options = $.extend(options, {});
+  return this.each(function(i, input) {
+    var me = $(this);
+    var placeholderTxt = "";
+    var label = me.prev("label");
+    if (label.length) {
+      placeholderTxt = label.text();
+      label.addClass("hide");
+      me.attr("placeholder", placeholderTxt).placeholder();
+    }
+    me.attr("placeholder", placeholderTxt).placeholder();
+    if (me.prop("nodeName") === "SELECT") {
+      me.prepend('<option selected="selected" disabled="disabled">' + placeholderTxt + "</option>");
+    }
+  });
+};
+$(function() {
+  $("#currency-frame #set_currency").stylableSelect();
+});
+$(document).bind("browse-node-search", function(event, filter) {
+  $(function() {
+    if (IB.nav.browse_node_level == "0") {
+      $("#facets").children().not("#product").hide();
+    }
+    setTimeout(function() {
+      $("#facets li.selected[data-facet-name]").parents(".facet").each(function() {
+        var f = $(this);
+        if (!f.find("ul").is(":visible")) {
+          f.find("> h6:first-child").find(".facet-toggle").trigger("click", [true]);
+        }
+      });
+      $("#facets > .facet:first-child").find("> h6.spin:first-child").find(".facet-toggle").trigger("click", [true]);
+      if(localStorage.getItem("expandFacets")){
+        var facetToExpand = $("#"+localStorage.getItem("expandFacets"));
+        facetToExpand.parents(".facet").find("> h6:first-child").find(".facet-toggle").trigger("click", [true]);
+        facetToExpand.find("> h6:first-child").find(".facet-toggle").trigger("click",[true]);
+        localStorage.removeItem("expandFacets");
+      }
+    }, 0);
+  });
+});
+$(document).one("browse-node-search", function(event, filter) {
+  $(function() {
+    var f = $("#facets").find("#product");
+    if (IB.nav.browse_node_level == "0") {
+      if (!f.find("ul").is(":visible")) {
+        f.find("> h6:first-child").find(".facet-toggle").trigger("click", [true]);
+      }
+      f.find("h6:first").hide();
+    } else {
+      $("#facets > .facet").each(function(i, f) {
+        f = $(f);
+        if(f.attr('id') != 'administrative'){
+          if (i < 1 && !f.find("ul").is(":visible")) {
+            f.find("> h6:first-child").find(".facet-toggle").trigger("click", [true]);
+          } else {
+            f.find("> h6:first-child").find(".facet-toggle").trigger("click", [true]);
+          }
+        }
+      });
+    }
+    if($("#page").hasClass("hr-search-filters")){ $("#facets #product > h6").trigger("click"); }
+  });
+});
+/*
+if(!inIframe){
+  $(document).bind("browse-node-search", function(event, search) {
+    var gem2_base = "https://org.gem.gov.in";
+    if (search.is_gem3 == false && $.trim(search.gem2_mapping).length) {
+      document.location.href = gem2_base + search.gem2_mapping;
+    }
+    if (search.total_results < 1) {
+      if (IB.nav.browse_node_level < 1) {
+        var m = window.location.search.match(/(^\?|[&;])q=([^&;]+)([&;]|$)/);
+        if (m && m.length > 3) {
+          var q = decodeURIComponent($.trim(m[2].replace("+", " ")));
+          if (q.length) {
+            document.location.href = gem2_base + "/search/searchresult?p=" + q;
+          }
+        } else {
+          document.location.href = gem2_base;
+        }
+      }
+    }
+  });
+}
+*/
+
+/** start override addre click */
+/*
+if (!String.prototype.startsWith) {
+  String.prototype.startsWith = function (search, pos) {
+    return this.substr(!pos || pos < 0 ? 0 : +pos, search.length) === search;
+  };
+}
+$(document).bind("checkout-address", function () {
+  setTimeout(function () {
+    $(".address_continue").unbind('click').bind("click", function (e) {
+      e.preventDefault();
+      var errors = false
+      if ($("#simple_purchase_reason_for_non_l1").val() == "") {
+        errors = true
+        $(".reason_error").show();
+      }
+      var cat_to_delivery = {
+        "/two-wheeler-motor-cycles-and-scooters-and-mopeds": 90,
+        "/ambulances": 90,
+        "/automotive-chassis-fitted-with-engine": 90,
+        "/buses": 90,
+        "/built-up-trucks": 90,
+        "/utility-vehicles": 90,
+        "/water-truck--cabin-truck-with--water-tank": 90,
+        "/prison-van-police-vehicles": 90,
+        "/tractors": 90,
+        "/commercial-military-private-vehicles-their-accessories-components": 90,
+        "/cars": 90,
+        "/troop-carrier-police-vehicles": 90,
+        "/25101500-electric-cars": 90
+      };
+
+      $.each($(".del_date_text"), function (v) {
+        var matched = false;
+        var wrapper = $(this).closest('.order-item');
+        try {
+          var url = $.trim(wrapper.find(' > .p-title > a').attr('href'));
+          var link = wrapper.find(' > .p-title > a')[0];
+          var price = wrapper.find('> .price.total')
+          var total = parseInt($.trim(price.text().replace('Rs.', '').replace(/,/g, '')), 10);
+          $.each(cat_to_delivery, function (k, v) {
+            if (link.pathname.startsWith(k + '/')) {
+              matched = true;
+            }
+          });
+          matched = matched || (total > 3000000);
+        } catch (e) {}
+        var days = (matched) ? 90 : 15;
+        wrapper.find('.del_date_error').html(" Please enter a valid value <= " + days);
+
+        var no_of_days = $(this).val();
+        if (no_of_days == "" || no_of_days < 1 || no_of_days > days || !no_of_days.match(/^\d+(\.\d+)?$/)) {
+          $(this).next().show();
+          errors = true
+        } else {
+          $(this).next().hide();
+        }
+      })
+      $.each($(".billing_cycle_select"), function (v) {
+        var billing_cycle = $(this).val();
+        if (!billing_cycle || billing_cycle == "") {
+          $(this).next().show();
+          errors = true
+        } else {
+          $(this).next().hide();
+        }
+      })
+      if (!errors) {
+        $("#address-details-page form").submit();
+      }
+    });
+  }, 500);
+});
+*/
+/** end override addre click */
+/**
+if(/\/user_info_new$/.test(document.location.pathname)){
+$(function(){
+var info = '<div class="bid-msg alert alert-info" role="alert">BID/RA system will be unavailable between 1:00 - 5:00 PM today due to system upgrade</div>';
+$('#shopping-cart-page').find('.bid-msg').remove();
+$('#shopping-cart-page').prepend(info);
+$('[data-checkout-type="Tender"], [data-checkout-type="RA"]').hide()
+});
+}
+$(function(){
+$('[href="https://bid.gem.gov.in/ntauth"]').remove()
+});
+**/
+
+$(function(){
+  $(document).on('click','a[href="#sellers-table-wrap"]', function(){
+    $('#sellers-table-wrap .delivery-locations-data').each(function(){
+      $(this).qtip({
+        position: {
+          target: 'mouse', 
+          adjust: {
+            mouse: false
+          } 
+        },
+        style: {
+          classes: 'qtip-title'
+        }
+    });
+
+    })    
+  })
+});

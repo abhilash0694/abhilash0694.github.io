@@ -1,0 +1,2616 @@
+/*
+ * AngularJS directives for double scroll bars
+ * Author: przno
+ * Homepage: https://github.com/przno/double-scroll-bars
+ * License: MIT
+ */
+
+(function(angular) {
+	'use strict';
+
+	angular.module('doubleScrollBars', [])
+
+	.directive('doubleScrollBarHorizontal', ['$timeout', '$dsb', '$$dsbStorage',
+		function($timeout, $dsb, $$dsbStorage) {
+
+			return {
+
+				// usage:
+				// <div data-double-scroll-bar-horizontal> {{content}} or static content </div>
+				// or with input value:
+				// <div data-double-scroll-bar-horizontal="always"> {{content}} or static content </div>
+				restrict: 'A',
+
+				// transclude the content
+				transclude: true,
+
+				// isolate scope
+				scope: {
+					doubleScrollBarHorizontal: '@', // if equals 'always' will display inactive scroll bars even if there is nothing to scroll; otherwise show them only when content overflows display area
+					id: '@' // optional id
+				},
+
+				// HTML template
+				template: '' +
+					'<div>' +
+					' <div style="overflow-y:hidden;" data-ng-style="{height:nativeScrollBarHeight}">' +
+					'  <div style="overflow-y:hidden;position:relative;top:-1px;" data-ng-style="{\'overflow-x\':doubleScrollBarHorizontal==\'always\'?\'scroll\':\'auto\',height:scrollBarElementHeight}">' +
+					'   <div data-ng-style="{width:wrapper2scrollWidth,height:scrollBarElementHeight}"></div>' +
+					'  </div>' +
+					' </div>' +
+					' <div data-ng-style="{\'overflow-x\':doubleScrollBarHorizontal==\'always\'?\'scroll\':\'auto\'}">' +
+					'  <div data-ng-transclude></div>' +
+					' </div>' +
+					'</div>',
+
+				// link function with the logic
+				link: function($scope, iElm, iAttrs, controller) {
+					var barSize = $dsb.getSize();
+					$scope.nativeScrollBarHeight = barSize + 'px';
+					$scope.scrollBarElementHeight = parseInt(barSize + 1) + 'px';
+
+					// scroll width of the wrapper2 div, width of div inside wrapper1 will be set to the same value
+					$scope.wrapper2scrollWidth = '0px';
+
+					// angular.element representation od the root <div> of this directive
+					var rootDiv = iElm.children().eq(0);
+
+					// angular.element object for the first div in the root // <div style="overflow-y: hidden;" data-ng-style="{\'overflow-x\': doubleScrollBarHorizontal == \'always\' ? \'scroll\' : \'auto\', height: nativeScrollBarHeight}">
+					// the 'virtual' top scroll bar will be here
+					var wrapper1 = rootDiv.children().eq(0).children().eq(0);
+
+					// angular.element object for the second div in the root // <div data-ng-style="{\'overflow-x\': doubleScrollBarHorizontal == \'always\' ? \'scroll\' : \'auto\'}">
+					// the 'real' bottom scroll bar will be here
+					var wrapper2 = rootDiv.children().eq(1);
+
+					// get native DOM element from angular.element
+					var wrapper1dom = wrapper1[0];
+					var wrapper2dom = wrapper2[0];
+
+					// if scrolling one ruler, scroll also the other one
+					wrapper1.on('scroll', function() {
+						wrapper2dom.scrollLeft = wrapper1dom.scrollLeft;
+					});
+
+					wrapper2.on('scroll', function() {
+						wrapper1dom.scrollLeft = wrapper2dom.scrollLeft;
+					});
+
+					var firstTime = true;
+
+					// watch for a change of the width (e.g. transcluded content changed and so changed its width)
+					$scope.$watch(function() {
+						return ($scope.wrapper2scrollWidth = wrapper2dom.scrollWidth + 'px');
+					}, function(newValue, oldValue) {
+						// run $apply one more time so the scroll bars are in sync
+						// $timeout to run it on next $digest cycle, otherwise angular will complain of '$digest already in process'
+						$timeout(function() {
+							$scope.$apply();
+
+							// first time after recompiled and width set (width set in $apply())
+							if (firstTime) {
+								// initial values for scroll position - zero if this directive is compiled very first time or if no id provided, otherwise use last scroll position (from service)
+								wrapper1dom.scrollLeft = $$dsbStorage.get($scope.id) || 0;
+								wrapper2dom.scrollLeft = $$dsbStorage.get($scope.id) || 0;
+								firstTime = false;
+							}
+
+						});
+					});
+
+					// save the scroll position for future (if id was specified)
+					$scope.$on('$destroy', function() {
+						if ($scope.id !== undefined)
+							$$dsbStorage.set($scope.id, wrapper1dom.scrollLeft);
+					});
+
+				}
+			};
+		}
+	])
+
+	// keeps the last scroll position for a directive specified by its id (in case the directive has been recompiled)
+	.service('$$dsbStorage', function() {
+		var storage = {};
+
+		return {
+			get: function(id) {
+				return storage[id];
+			},
+			set: function(id, value) {
+				storage[id] = value;
+			}
+		};
+	})
+
+	// calculate scroll bar's width/height (in pixels) as it differs between various browsers and systems
+	// e.g. FF on Win7 17px, FF on Ubuntu 15px, FF on Xubuntu 13px
+	.service('$dsb', function() {
+
+		function getWidth() {
+			// dang! DOM manipulation outside Angular's directives. But the element only lives for a glympse of time, I remove it immediatelly...
+			var inner = document.createElement('div');
+			var outer = document.createElement('div');
+
+			inner.style.width = '100%';
+			inner.style.height = '200px';
+
+			outer.style.width = '200px';
+			outer.style.height = '150px';
+			outer.style.position = 'absolute';
+			outer.style.top = '0';
+			outer.style.left = '0';
+			outer.style.visibility = 'hidden';
+			outer.style.overflow = 'hidden';
+			outer.appendChild(inner);
+
+			document.body.appendChild(outer);
+			var width1 = inner.offsetWidth;
+			outer.style.overflow = 'scroll';
+			var width2 = outer.clientWidth;
+			document.body.removeChild(outer);
+			return (width1 - width2);
+		}
+
+		var width;
+
+		return {
+			getSize: function() {
+				width = width || getWidth();
+				return width;
+			}
+		};
+	});
+
+})(angular);
+angular.module('srvc',["siteApp", "uiBrowseNodeApp", "schemaForm", "doubleScrollBars"])
+.value('uiBrowseConfig', {
+  filters:[
+    {code: 'active_categories', name: 'Active Categories', value: true, incognito: true, enforced: true},
+  ],
+  searchFilterConfig: {'search': {'status_in': ['active']}}
+})
+.config(['$stateProvider', '$urlRouterProvider',
+  function ($stateProvider, $urlRouterProvider) {
+    $stateProvider
+    .state('open', {
+      url: '/browse/:id/open',
+      template: "<rate-sheet-search-component></rate-sheet-search-component>"
+    })
+    .state('boqdashboard', {
+      url: '/Ebunch',
+      template: '<boq-dashboard></boq-dashboard>'
+    })
+    .state('index', {
+      url: '/Ebunch/index',
+      template: "<index-cart></index-cart>"
+    })
+    .state('new', {
+      url: '/Ebunch/new',
+      template: "<new-cart></new-cart>"
+    })
+    .state('show', {
+      url: '/Ebunch/cart/:number',
+      template: "<show-cart></show-cart>"
+    })
+    .state('add_item', {
+      url: '/Ebunch/cart/:number/add_item',
+      template: "<add-service></add-service>"
+    })
+    .state('edit_item', {
+      url: '/Ebunch/cart/:number/edit_item/:service_id',
+      template: "<edit-service></edit-service>"
+    })
+}])
+
+angular.module('srvc')
+
+.component('rateSheetSearchComponent',{
+  bindings: {
+    srvcBoqData: "="
+  },
+  templateUrl: "/javascripts/site_angular/srvc/views/rate_sheet_search.html",
+  controller: 'rateSheetSearchCntrl'
+})
+
+.component('serviceIndexComponent',{
+  controller: 'srvcIndexCntrl',
+  templateUrl: "/javascripts/site_angular/srvc/views/index.html"
+})
+
+.controller('srvcIndexCntrl',['$scope', 'srcService', 'paginationDecorator', '$window', '$state', '$stateParams',
+  function($scope, srcService, paginationDecorator, $window, $state, $stateParams){
+  $scope.srvcList;
+  $scope.pageSize = 9;
+  $scope.status = {}
+  $scope.goPage = function(page){
+    $state.go('init',{page: page})
+  }
+  $scope.$watch('pageSize', function (){
+    if($stateParams['page']){
+      $scope.setPage(parseInt($stateParams['page']));
+    }else{
+      $scope.setPage(1);
+    }
+  });
+  $scope.setPage = function(page) {
+    if (page < 1) {
+      return;
+    }
+    srcService.get_services(page,$scope.pageSize).then(function(response){
+      if(response){
+        $scope.srvcList = response.services;
+        $scope.pageList = paginationDecorator(response.total_entries,page,$scope.pageSize);
+      }
+      console.log("$scope.data",$scope.srvcList,$scope.pageList);
+    })
+  }
+  $scope.redirect = function(srvc){
+    console.log("redirect")
+    if(!_.isEmpty(srvc.seo_url)){
+      $window.location.href = srvc.seo_url
+    }else{
+      $state.go('rateSheetSearch',{id: srvc.id}) 
+    }
+  }
+}])
+
+.controller('rateSheetSearchCntrl',['$scope', '$stateParams', 'srcService', 'srvcDecorator', 'compareService', 'consigneeService', 'notificationService', '$window', '$filter', '$sce', 'svcDependenciesRuleService', 'advisoryPopupService', '$state', 'boqService',
+  function($scope, $stateParams, srcService, srvcDecorator, compareService, consigneeService, notify, $window, $filter, $sce, svcDependenciesRuleService, advisoryPopupService, $state, boqService){
+    $scope.response = { headers: [] , results: []}
+    $scope.srvc = {est:{}, facets:{}, qcbs:{}}
+    $scope.srvc.show_consignee_popup = false
+    $scope.seller = {};
+    $scope.services_list = [];
+    $scope.srvc.show_seller_popup = false;
+    $scope.srvc.hide_search_input = false
+    $scope.srvc.search_allowed = false
+    $scope.compare_svc = compareService
+    $scope.expand_row = false
+    $scope._ = _
+    $scope.contract = {}
+    $scope.show_disabled_add_to_cart_msg = false
+    this.$onInit = function() {
+      $scope.srvcBoqData = this.srvcBoqData
+      $scope.bn_id = $stateParams['id']
+      setBoqAttributes()
+      $scope.loadService()
+    };
+    var setBoqAttributes = function(){
+       if($scope.srvcBoqData && $scope.srvcBoqData.data.in_boq_order_mode){
+        $scope.bn_id = $scope.srvcBoqData.data.bn_id
+        $stateParams['id'] = $scope.bn_id
+        $scope.srvc.in_boq_order_mode = true
+        $scope.srvc.edit_in_boq_order_mode = $scope.srvcBoqData.data.edit_item
+        $scope.srvc.is_bid_intent = true
+      }
+    }
+    // This is for boq edit item.
+    var setDefaultFiltersForEdit = function(){
+      var search_params = $scope.srvcBoqData.data.orderItem.facets_list_for_api
+      if(search_params && search_params['data_to_be_collected'])
+        $scope.srvc.buyer_parameters = search_params['data_to_be_collected']['values']
+      $scope.selected_facet = search_params.service_search_params.filters
+      _.forEach($scope.selected_facet, function(value, key){
+        // $scope.selected_facet[key] = _.intersection($scope.selected_facet[key], ($scope.srvc.specifications.spec_data.core[key] || $scope.srvc.specifications.spec_data.addon[key]).value)
+      })
+      $scope.usage = search_params.service_search_params.usage
+      $scope.qcbs_params = search_params.service_search_params.qcbs
+      initializeConsignee().then(function(response){
+        $scope.consignee.selected_consignee = $scope.srvcBoqData.data.orderItem.consignee_data
+      })
+    }
+    var set_compatibility_data = function(compatibility_data){
+      $scope.srvc.is_cart_compatible = compatibility_data.is_compatible
+      var today = new Date()
+      if($scope.srvc.is_bid_intent && $scope.srvc.is_cart_compatible && !_.isEmpty(compatibility_data.contract_date)){
+        $scope.srvc.compatible_contract_date = compatibility_data.contract_date
+        $scope.srvc.compatible_contract_date.start_date = new Date($scope.srvc.compatible_contract_date.start_date)
+        $scope.srvc.compatible_contract_date.end_date = new Date($scope.srvc.compatible_contract_date.end_date)
+        if(compatibility_data.is_boq_compatible){
+          $scope.srvc.compatible_contract_date.start_date = $filter('date')(new Date($scope.srvc.compatible_contract_date.start_date),'yyyy-MM-dd')
+          $scope.srvc.compatible_contract_date.end_date = $filter('date')(new Date($scope.srvc.compatible_contract_date.end_date),'yyyy-MM-dd')
+          $scope.contract.end_date = $scope.srvc.compatible_contract_date.end_date
+          $scope.contract.start_date = $scope.srvc.compatible_contract_date.start_date
+          $scope.srvc.is_cart_compatible = true
+          $scope.srvc.is_contrat_dates_available = true
+          return
+        }
+        if($scope.srvc.compatible_contract_date.start_date > today && $scope.srvc.compatible_contract_date.end_date > today && (!$scope.srvc.minimum_contract_period || ($scope.srvc.minimum_contract_period && (calcDays($scope.srvc.compatible_contract_date.end_date,$scope.srvc.compatible_contract_date.start_date) >= $scope.srvc.minimum_contract_period)))){
+          $scope.srvc.compatible_contract_date.start_date = $filter('date')(new Date($scope.srvc.compatible_contract_date.start_date),'yyyy-MM-dd')
+          $scope.contract.start_date = $scope.srvc.compatible_contract_date.start_date
+          $scope.srvc.compatible_contract_date.end_date = $filter('date')(new Date($scope.srvc.compatible_contract_date.end_date),'yyyy-MM-dd')
+          $scope.contract.end_date = $scope.srvc.compatible_contract_date.end_date
+          $scope.srvc.is_contrat_dates_available = true
+        }else{
+          $scope.srvc.is_cart_compatible = false
+          $scope.srvc.is_contrat_dates_available = false
+        }
+      }else{
+        $scope.srvc.is_contrat_dates_available = false
+      }
+    }
+    $scope.seller_data = {
+      sellerPaginationMeta: {}
+    }
+    $scope.get_seller_list = function(page){
+      srcService.get_seller_list($scope.bn_id, page).then(function(response){
+        $scope.seller_data.seller_list = response.seller_list
+        $scope.seller_data.srvc_catalog_hash = response.srvc_catalog_hash
+        $scope.seller_data.sellerPaginationMeta = response.pagination_meta
+      })
+    }
+    $scope.changeSellerList = function(){
+       $scope.get_seller_list($scope.seller_data.sellerPaginationMeta.page)
+    }
+    $scope.humanized_facet_format = function(k,v){
+      return _.isObject(v) && k == 'seller_location'? v.type +" : "+v.name : v
+    }
+    $scope.loadService = function(){
+      if($scope.bn_id){
+        srcService.getData($scope.bn_id).then(function(response){
+          console.log('response',response)
+          spec_data = response.spec_data
+          if(!_.isEmpty(spec_data.seo_url)){
+            console.log("redirecting to ",spec_data.seo_url)
+            $window.location.href = spec_data.seo_url
+          }
+          service_param = response.service_param
+          compatibility_data = response.compatibility_data
+          if($scope.srvcBoqData && $scope.srvcBoqData.data.in_boq_order_mode)
+            compatibility_data = $scope.srvcBoqData.data.compatibility_data
+
+          bid_param = response.bid_param
+          if (spec_data.specifications){
+            $scope.srvc = {}
+            setBoqAttributes()
+            if(spec_data.specifications.dependencies && spec_data.specifications.dependencies.length > 0){
+              $scope.srvc.rate_sheet_defn = _.chain({}).extend(spec_data.specifications.spec_data.core).extend(spec_data.specifications.spec_data.addon).value()
+              _.forEach($scope.srvc.rate_sheet_defn,function(value,key){
+                if(value.data_type == "boolean")
+                  _.merge($scope.srvc.rate_sheet_defn[key],{"value" : ["true","false"]})
+              })
+
+              $scope.srvc.dep_rules = svcDependenciesRuleService(spec_data.specifications.dependencies,$scope.srvc.rate_sheet_defn)
+              _.forEach(spec_data.specifications.dependencies,function(deps){
+                if(deps.columns.length > 0 && $scope.srvc.rate_sheet_defn[deps.columns[0]] && $scope.srvc.rate_sheet_defn[deps.columns[1]]){
+                  dep_column_length = deps.columns.length
+                  _.forEach(deps.columns, function(col, index){
+                    if(index !=- 0 && index < dep_column_length)
+                      $scope.srvc.rate_sheet_defn[col]["dependency_on"] = deps.columns[index-1]
+                  })
+                }
+              })
+            }
+            $scope.srvc = _($scope.srvc).extend(srvcDecorator.srvc(spec_data)).value()
+            $scope.customBidActionFlags = {open_consent_popup: true}
+            $scope.srvc.custom_bid_consents = spec_data.custom_bid_service_consents
+            $scope.service_lead_days = $scope.srvc.specifications.service_lead_days || 1
+            var estp_keys = _.map($scope.srvc.est,function(value,key){ return key})
+            $scope.est_params = _.sortBy(estp_keys,function(key){return $scope.srvc.est[key]['order']})
+            $scope.modified_est_params = $scope.srvc.est
+            $scope.edit_parameter = {}
+            $scope.temp = ""
+            _.forEach($scope.srvc.est,function (value,key) {
+              $scope.edit_parameter[key]={}
+              $scope.edit_parameter[key]['edited']=false
+              $scope.edit_parameter[key]['show_edit_parameter_popup'] = false
+              value.modified_display_name = value.display_name
+            })
+            _.forEach($scope.srvc.specifications.data_to_be_collected.market.buyer.uiSchema, function(uischema){
+              if(uischema["type"] == "datepicker"){
+                var toDay_date =new Date();
+                uischema["minDate"]= new Date();
+                uischema["maxDate"]=  toDay_date.setDate(toDay_date.getDate() + 365);
+              } 
+            })
+            $scope.set_start_and_end_date($scope.service_lead_days)
+            $scope.set_end_date_limit($scope.service_lead_days)
+            if ($scope.srvc.offer_price_only_in_bid || $scope.srvc.bid_only_category || $scope.srvc.is_custom_bid_service || $scope.srvc.custom_handled_category) {
+              $scope.srvc.is_bid_intent = true
+              $scope.set_bid()
+            }
+            if($scope.srvc.in_boq_order_mode)
+              get_service_catalog(1)
+            if($scope.srvc.is_bid_only){
+              $scope.get_seller_list(1)
+            }
+            if($scope.srvc.is_custom_bid_service && $scope.srvc.is_buyer)
+              advisoryPopupService.show("custom_bid_service" + $scope.srvc.id, "services")
+            $scope.srvc.image = $scope.srvc && $scope.srvc.specifications && $scope.srvc.specifications.image && $scope.srvc.specifications.image.url ? $scope.srvc.specifications.image.url : ""
+            $scope.srvc.is_bid_intent = bid_param.is_bid
+            set_compatibility_data(compatibility_data)
+            $scope.enable_custom_filter()
+            $scope.srvc.incident_report_url = service_param.incident_report_url
+            $scope.srvc.seller_facets = service_param.seller_facets
+            $scope.srvc.seller_facet_data =  service_param.seller_facet_data
+            $scope.srvc.seller_facet_list =  _.keys($scope.srvc.seller_facet_data)
+            $scope.srvc.show_service_count = 20;
+            $scope.srvc.add_service_count = 20;
+
+          // $scope.srvc.minimum_contract_period = 2
+          console.log("$scope.srvc",$scope.srvc);
+          if ($scope.srvc.type == 'BidOnlyService') {
+            $scope.srvc.BidOnlyService = true
+          }else{
+            $scope.srvc.BidOnlyService = false
+          }
+          $scope.f_status = {}
+          $scope.selected_facet = {}
+          $scope.usage = {}
+          $scope.qcbs_params = {}
+          if($scope.srvcBoqData && $scope.srvcBoqData.data && $scope.srvcBoqData.data.in_boq_order_mode && $scope.srvcBoqData.data.edit_item)
+          setDefaultFiltersForEdit()
+          $scope.srvc.update_down_stream_dependency =  function(row_data, target) {
+            if (spec_data.specifications.dependencies && spec_data.specifications.dependencies.length > 0) {
+              _.forEach(spec_data.specifications.dependencies, function(dependency){
+                if(_.includes(dependency.columns , target)){
+                  for (var j = dependency.columns.indexOf(target) + 1; j > 0 && j < dependency.columns.length; j++) {
+                    custom_value = []
+                    _.forEach(row_data[dependency.columns[j]], function(val){
+                      if(_.endsWith(val, $scope.srvc.custom_filter_value))
+                        custom_value.push(val)
+                    })
+                    var intersection = row_data[dependency.columns[j]]
+                    _.forEach(dependency.allowed_values, function(allowed_val){
+                      intersection = _.intersection(intersection,allowed_val[dependency.columns[j]].value)
+                    })
+                    row_data[dependency.columns[j]]=intersection.concat(custom_value)
+                  }
+                }
+              })
+            }
+          }
+          $scope.srvc.add_custom_value_to_selected_facet = function(selectedFacet,custom_value){
+            custom_value += $scope.srvc.custom_filter_value
+            $scope.srvc.remove_custom_value(selectedFacet, $scope.srvc.custom_filter_value)
+            if (selectedFacet.indexOf(custom_value) === -1)
+              selectedFacet.push(custom_value);
+          }
+          $scope.srvc.setCustomBoqValues = function(_scope){
+            if($scope.srvc.in_boq_order_mode && $scope.srvc.edit_in_boq_order_mode && _scope.list && _scope.list.indexOf($scope.srvc.custom_filter_value) != -1 && _.isArray(_scope.selectedFacet)){
+              var values = _.chain(_.difference(_scope.selectedFacet, _scope.list)).filter(function(f){return f.length > 0 && f != $scope.srvc.custom_filter_value}).value()
+              if(values.length > 0){
+                _scope.checkbox_model = true
+                _scope.custom_value = values[0]
+                _scope.selectedFacet = _.concat(_.intersection(_scope.list, _scope.selectedFacet), [$scope.srvc.custom_filter_value])
+                $scope.srvc.add_custom_value_to_selected_facet(_scope.selectedFacet, _scope.custom_value)
+                _scope.selectedFacet = _.chain(_scope.selectedFacet).uniq().value()
+              }
+            }
+          }
+          $scope.srvc.read_only_for_custom_bid_service = function(){
+            var is_valid = $scope.srvc.is_custom_bid_service
+            return is_valid ? is_valid : false
+          }
+          $scope.srvc.validate_custom_value_special_characters = function(custom_value){
+            var regex = /^[A-Za-z0-9-<>=(),/%*#:& ]+$/
+            var is_valid = regex.test(custom_value);
+            if (!is_valid) {
+              notify.error("Custom Input Box Contains Unallowed Special Characters!!!!, , Allowed Special characters are - < > = ( ) , / % * # : &")
+            }
+            return is_valid
+          }
+          $scope.srvc.remove_custom_value = function(selectedFacet, option){
+            if(option == $scope.srvc.custom_filter_value && selectedFacet.indexOf(option) != -1 ){
+              selectedFacet.splice(selectedFacet.indexOf(option)+1, 1);
+            }
+          }
+          $scope.srvc.customized_display_name_for_filter = function(filter_option){
+            customized_display_name = {}
+            customized_display_name[$scope.srvc.custom_filter_value]= "Other"
+            if(_.has(customized_display_name, filter_option))
+              return customized_display_name[filter_option]
+            if(filter_option == 'true' || filter_option == 'false')
+              return (filter_option == 'true') ? "Yes": "No"
+            return filter_option
+          }
+          $scope.srvc.tooltip_for_custom_filter = function(){
+            return "May be used while creating bid to enter requisite value pertaining to the attribute if not readily available in the pre-defined LOV as above"
+          }
+        }else{
+          $scope.srvc.status = 'no_spec'
+        }
+      })
+      }
+    }
+    // $scope.loadService()
+    $scope.get_services_list = function(){
+      srcService.get_service_list({"type":"service"}).then(function(response){
+        $scope.services_list = response.list
+      })
+    }
+
+    $scope.callback_service_list = function(){
+      if(_.isEmpty($scope.services_list))
+        $scope.get_services_list()
+      $scope.services_list = $scope.services_list.filter(function(srvc) {return srvc.type!= "CompositeService" && !srvc.is_custom_bid_service})
+      return $scope.services_list.map(function(a) {return {"name":a.display_name,"value":a.id}})
+    }
+
+    $scope.schema = {
+      "type": "object",
+      "properties": {
+        service: {
+          type: "array",
+          items: {
+            type: "integer"
+          },
+        }
+      }
+    }
+    $scope.form = [
+    {
+      "key": "services",
+      "type": "uiselectmultiple",
+      "placeholder": "Select services",
+      "options": {
+        "callback": "callback_service_list"
+      }
+      }, {
+        type: "submit",
+        title: "OK"
+      }
+    ]
+    $scope.model = {"services":[]}
+
+    $scope.submitted = function(form) {
+      console.log($scope.model)
+    }
+
+    $scope.$watch(function() { return $scope.model.services.length }, function (newValue, oldValue){
+      if(newValue > 5)
+        notify.error("Maximum 5 similar services allowed")
+    });
+
+    $scope.top_n_core_param_display_name = function(){
+      return _.chain($scope.srvc.core_facets).take($scope.srvc.specifications.top_n_core_value || 1).map("display_name").join().value()
+    }
+
+    $scope.set_start_and_end_date = function(service_lead_days){
+      var myDate = new Date()
+      var six_months = 180
+      var toDay = new Date()
+      $scope.datepicker = {
+        start_date: {
+          opened: false,
+          options: {
+            formatYear: 'yy',
+            startingDay: 1,
+            minDate: myDate.setDate(myDate.getDate()+service_lead_days),
+            maxDate: toDay.setDate(toDay.getDate()+service_lead_days+six_months-1)
+          }
+        },
+        end_date: {
+          opened: false,
+          options: {
+            formatYear: 'yy',
+            startingDay: 1,
+            minDate: myDate.setDate(myDate.getDate()),
+            maxDate: toDay.setDate(toDay.getDate()+1)
+          }
+        },
+        open: function(type){
+          $scope.datepicker[type].opened = true;
+        }
+      }
+    }
+
+    $scope.is_price_on_demand = function(){
+      if ($scope.srvc.optional_offer_price_service){
+        return $scope.srvc.is_bid_intent && $scope.active.tab == 1
+      }else if($scope.srvc.offer_price_only_in_bid){
+        return $scope.srvc.is_bid_intent
+      }else if($scope.custom_filter_selected()){
+        return $scope.srvc.is_bid_intent
+      }
+      else
+        return false
+    }
+
+    $scope.disable_price = function(header){
+      return $scope.is_price_on_demand() && (header.field == 'final' || header.type=="addon_price" || header.type=="rsp")
+    }
+
+    var initializeConsignee = function(){
+      return consigneeService.init().then(function(response){
+        $scope.consignee = consigneeService;
+        return response
+      })
+    }
+
+    $scope.open_popup = function(){
+      if(!$scope.consignee) {
+        if($scope.srvc.can_perform_cart_actions){
+          initializeConsignee()
+        }else{
+          consigneeService.dummy_init().then(function(response){
+            $scope.consignee = consigneeService;
+          })
+        }
+      }
+      $scope.srvc.show_consignee_popup = true
+      console.log("consignee",$scope.consignee)
+    }
+    $scope.date_formatting = function(date_type){
+      if (date_type == 'start_date'){
+        var toDay = $scope.contract && $scope.contract.start_date ? angular.copy($scope.contract.start_date) : new Date()
+        $scope.datepicker.end_date.options.maxDate = toDay.setDate(toDay.getDate()+$scope.srvc.maximum_contract_period-1)
+      }
+      $scope.contract[date_type] = $filter('date')($scope.contract[date_type],'yyyy-MM-dd')
+    }
+    $scope.srvc.search_allowed = false;
+    $scope.srvc.min_compare_length = 99999
+    $scope.compare_tray = {}
+
+    var calcDays = function(firstDate, secondDate){
+      var oneDay = 24*60*60*1000; // hours*minutes*seconds*milliseconds
+      return Math.round(Math.abs((firstDate - secondDate)/(oneDay))) + 1;
+    }
+    $scope.usageArr = []
+  
+    var calculateDateFormula = function(f_date,formula){
+      var f_number = formula.match(/\d+/g);
+      var date = new Date(f_date)
+      if(f_number && f_number.length){
+        if(formula.indexOf('+') != -1)
+        {
+          return date.setDate(date.getDate() + Number(f_number[0]))
+        }
+        else if(formula.indexOf('-') != -1){
+          return date.setDate(date.getDate() - Number(f_number[0]))
+        }
+      }
+      return date;
+    }
+
+    var calculate_estp_formula = function(formula){
+      var contract_period = {}
+      var estp_variables = ["$contract_period","$no_of_month"]
+      if(formula && $scope.contract.start_date && $scope.contract.end_date){
+        var no_of_days = calcDays(new Date($scope.contract.start_date), new Date($scope.contract.end_date))
+        contract_period["$contract_period"] = no_of_days
+        contract_period["$no_of_month"] = no_of_days/30
+        _.forEach(estp_variables, function(variable){
+          formula = formula.split(variable).join(contract_period[variable])
+        })
+        return Number(eval(formula))
+      }
+      return undefined
+    }
+
+
+    var formated_buyer_parameters = function(buyer_parameters){
+      var dtbc_params = angular.copy(buyer_parameters)
+      _.forEach($scope.srvc.specifications.data_to_be_collected.market.buyer.uiSchema, function(uischema){
+        if(uischema["type"] == "datepicker" && dtbc_params && dtbc_params[uischema["id"]]){
+          dtbc_params[uischema["id"]] = $filter('date')(new Date(dtbc_params[uischema["id"]]),'yyyy-MM-dd')
+        }
+      })
+      return dtbc_params
+    }
+
+    var validate_buyer_parameters = function(){
+      var buyer_params_date_error = []
+      _.forEach($scope.srvc.specifications.data_to_be_collected.market.buyer.uiSchema, function(uischema){
+        if(uischema["type"] == "datepicker" && $scope.srvc.buyer_parameters && $scope.srvc.buyer_parameters[uischema["id"]]){
+          buyer_param_minDate = $filter('date')(new Date(uischema["minDate"]),'yyyy-MM-dd')
+          buyer_param_maxDate = $filter('date')(new Date(uischema["maxDate"]),'yyyy-MM-dd')
+          buyer_param = $filter('date')(new Date($scope.srvc.buyer_parameters[uischema["id"]]),'yyyy-MM-dd')
+          if(buyer_param < buyer_param_minDate || buyer_param > buyer_param_maxDate){
+            buyer_params_date_error.push(uischema["title"] + "should be between " + buyer_param_minDate + " and "+ buyer_param_maxDate)
+          }
+        }
+      })
+      if (buyer_params_date_error.length !=0){
+        notify.error(buyer_params_date_error.join(' <br> '));
+        $scope.srvc.search_allowed = false;
+        return false;
+      }
+      return true;
+    }
+
+    $scope.validate_inputs = function(){
+      var s_date = $scope.contract.start_date
+      var e_date = $scope.contract.end_date
+      var today = new Date()
+      var s_date_max = new Date()
+      s_date_max.setDate(s_date_max.getDate()+180)
+      var date_error = false;
+      var est_param_error = []
+      if(!s_date){
+        idx = $scope.usageArr.indexOf("start date")
+        if(idx == -1)
+          $scope.usageArr.push("start date")
+      }else{
+         _.forEach($scope.srvc.specifications.data_to_be_collected.market.buyer.uiSchema, function(uischema){
+            if(uischema["type"] == "datepicker"){
+              if(uischema["minDateFormula"] && uischema["minDateFormula"].indexOf("$contract_startDate") != -1){
+                 uischema["minDate"]= calculateDateFormula(s_date, uischema["minDateFormula"])
+              }
+              if(uischema["maxDateFormula"] && uischema["maxDateFormula"].indexOf("$contract_startDate") != -1){
+                uischema["maxDate"]= calculateDateFormula(s_date, uischema["maxDateFormula"])
+              }
+            }
+          })
+        idx = $scope.usageArr.indexOf("start date")
+        if (idx != -1){
+          $scope.usageArr.splice(idx, 1);
+        }
+      }
+      if (!e_date) {
+        idx = $scope.usageArr.indexOf("end date")
+        if(idx == -1)
+          $scope.usageArr.push("end date")
+      }else{
+         _.forEach($scope.srvc.specifications.data_to_be_collected.market.buyer.uiSchema, function(uischema){
+            if(uischema["type"] == "datepicker"){
+              if(uischema["minDateFormula"] && uischema["minDateFormula"].indexOf("$contract_endDate") != -1){
+                 uischema["minDate"]= calculateDateFormula(e_date, uischema["minDateFormula"])
+              }
+              if(uischema["maxDateFormula"] && uischema["maxDateFormula"].indexOf("$contract_endDate") != -1){
+                uischema["maxDate"]= calculateDateFormula(e_date, uischema["maxDateFormula"])
+              }
+            }
+          })
+        idx = $scope.usageArr.indexOf("end date")
+        if (idx != -1){
+          $scope.usageArr.splice(idx, 1);
+        }
+      }
+      if(s_date && e_date && s_date > e_date ){
+        notify.error('$a$.m.srvc.rate_sheet_search.end_date_less_than_start_date_error')
+        date_error = true;
+      }
+      if(s_date && new Date(s_date) > s_date_max ){
+        notify.error('$a$.m.srvc.rate_sheet_search.start_date_greater_max_error')
+        date_error = true;
+      }
+      $scope.set_end_date_limit = function(service_lead_days){
+        var s_date = $scope.contract.start_date
+        if (s_date) {
+          var e_date_max = new Date(s_date)
+          e_date_max.setDate(e_date_max.getDate()+364+service_lead_days)
+          if(s_date && e_date && Date.parse(e_date) > e_date_max ){
+            notify.error('$a$.m.srvc.rate_sheet_search.end_date_greater_max_error')
+            date_error = true;
+          }
+        }
+      }
+      if(s_date && e_date && Date.parse(s_date) <= today || Date.parse(e_date) <= today ){
+        notify.error('$a$.m.srvc.rate_sheet_search.date_less_than_today_error')
+        date_error = true;
+      }
+      if($scope.srvc && $scope.srvc.minimum_contract_period && s_date && e_date && (calcDays(new Date(e_date),new Date(s_date)) < $scope.srvc.minimum_contract_period)){
+        notify.error('$a$.m.srvc.rate_sheet_search.contract_period_less_than_service_days', {translationValues: {minimum_contract_period: $scope.srvc.minimum_contract_period}})
+        date_error = true;
+      }
+
+      if($scope.srvc && $scope.srvc.maximum_contract_period && s_date && e_date && (calcDays(new Date(e_date),new Date(s_date)) > $scope.srvc.maximum_contract_period)){
+        notify.error('$a$.m.srvc.rate_sheet_search.contract_period_more_than_service_days', {translationValues: {maximum_contract_period: $scope.srvc.maximum_contract_period}})
+        date_error = true;
+      }
+
+      if(!_.isEmpty($scope.srvc.est)){
+        _.forEach($scope.srvc.est,function(list,key){
+          if(list.is_addon_specific && (_.isEmpty($scope.selected_facet[list.addon_code]) || _.compact(_.without($scope.selected_facet[list.addon_code],"false")).length == 0)){
+            idx = $scope.usageArr.indexOf(list.display_name)
+            if (idx != -1){
+              $scope.usageArr.splice(idx, 1);
+            }
+          }
+          else if($scope.usage.hasOwnProperty(key) && (_.isNumber($scope.usage[key]) && $scope.usage[key] >= 0)){
+            idx = $scope.usageArr.indexOf(list.display_name)
+            var est_min_value = calculate_estp_formula(list.min_value_formula) || 0
+            var est_max_value = calculate_estp_formula(list.max_value_formula) || Infinity
+            if($scope.usage[key] < est_min_value){
+            est_param_error.push(list.display_name +" value can not be less than "+est_min_value)
+            }
+            if($scope.usage[key] > est_max_value){
+              est_param_error.push(list.display_name +" value can not be more than "+est_max_value)
+            }
+            if (idx != -1){
+              $scope.usageArr.splice(idx, 1);
+            }
+          }else{
+            idx = $scope.usageArr.indexOf(list.display_name)
+            if(idx == -1)
+              $scope.usageArr.push(list.display_name)
+          }
+        })
+      }
+      $scope.srvc.search_allowed = true
+      $scope.srvc.input_valid = false
+      if($scope.usageArr.length == 0 && !date_error && est_param_error.length == 0 && validate_buyer_parameters()){
+        $scope.srvc.search_allowed = true
+        $scope.srvc.input_valid = true
+      }else if(est_param_error.length != 0){
+        notify.error(est_param_error.join(' <br> '))
+      }
+      $scope.search_results =[]
+      return true
+    }
+
+    $scope.$watch(function(){return [$scope.usage,$scope.contract,$scope.srvc.buyer_parameters]},function(newvalue,oldValue){
+      $scope.validate_inputs();
+      console.log("watching");
+    },true)
+    $scope.validate_custom_filters = function(){
+      var is_valid = true
+      _.forEach($scope.selected_facet, function(list,key){
+        arr =_.filter(list, function(val) {
+          return _.endsWith(val, $scope.srvc.custom_filter_value)
+        })
+        if(arr.length == 1)
+          is_valid = false
+      })
+      if(!is_valid) notify.error('$a$.m.srvc.empty.custom.filter')
+      return is_valid
+    }
+    $scope.validate_filters = function(){
+      var is_valid = true;
+      var unselected_filters = [];
+      if($scope.srvc.facets && $scope.srvc.facets.core){
+        _.forEach($scope.srvc.facets.core, function(list,key){
+          keyPresent = $scope.selected_facet.hasOwnProperty(key)
+          if (keyPresent){
+            facet = $scope.selected_facet[key]
+            isarray = _.isArray($scope.selected_facet[key])
+          }
+          if(!keyPresent || (keyPresent && ((isarray &&_.isEmpty(facet)) || (!isarray && (_.isEmpty(facet) ||(_.isNil(facet.min) && _.isNil(facet.max))))))) {
+            is_valid = false;
+            unselected_filters.push(list.display_name)
+          }
+        })
+      }
+      if($scope.srvc.is_custom_bid_service && _.isEmpty($scope.model.services)){
+        is_valid = false;
+        unselected_filters.push("similar_services")
+      }
+      if(!is_valid) notify.error('$a$.m.srvc.rate_sheet_search.select_relevant_filter', {translationValues: {unselected_filters: unselected_filters.join(", ")}})
+      if($scope.srvc.is_custom_bid_service && $scope.model.services.length > 5){
+        is_valid = false;
+        notify.error("Max 5 similar services allowed")
+      }
+      return is_valid && $scope.validate_custom_filters()
+    }
+    $scope.validate_consignee = function(){
+      var is_valid = true;
+      if($scope.consignee && $scope.consignee.selected_consignee){
+        if(!$scope.consignee.validate_consignee_data()){
+          is_valid = false;
+          $scope.srvc.can_perform_cart_actions ? notify.error('$a$.m.srvc.rate_sheet_search.consignee_field_error') : notify.error('$a$.m.srvc.rate_sheet_search.location_quantity_error')
+        }
+      }else{
+        is_valid = false;
+        $scope.srvc.can_perform_cart_actions ? notify.error('$a$.m.srvc.rate_sheet_search.consignee_error') : notify.error('$a$.m.srvc.rate_sheet_search.location_error')
+        $scope.open_popup()
+      }
+      return is_valid;
+    }
+
+    var lower_case_consignee = function(){
+      var consignee_data = angular.copy($scope.consignee.selected_consignee)
+      _.map(consignee_data,function(c){
+        c['delivery_state'] = _.toLower(c['delivery_state']);
+        return c
+      })
+      return consignee_data;
+    }
+    $scope.validate_usage = function(){
+      _.forEach($scope.usage,function(v,k){
+        if($scope.srvc.est[k].is_addon_specific && _.compact(_.without($scope.selected_facet[$scope.srvc.est[k].addon_code],'false')).length == 0){
+          delete $scope.usage[k]
+        }
+      })
+      return true;
+    }
+    $scope.remove_filter_and_search = function(key,index){
+      if (_.isArray($scope.applied_facet[key])){
+        $scope.applied_facet[key].splice(index,1)
+        $scope.selected_facet[key].splice(index,1)
+        $scope.get_results()
+      }else{
+        $scope.applied_facet[key] = {}
+        $scope.selected_facet[key] = {}
+        $scope.get_results()
+      }
+    }
+    
+    $scope.pageChange =function(changeType){
+      if(changeType=='prev' && $scope.current_page > 1){
+        $scope.current_page-=1;
+        $scope.get_results($scope.current_page);
+      }
+      else if(changeType=='next' && !$scope.isNextDisabled){
+         $scope.current_page+=1;
+         $scope.get_results($scope.current_page); 
+      }
+    }
+    $scope.enable_bid_indent = false
+    $scope.active = {
+      tab : 0
+    }
+
+    $scope.OptionalOfferPrice = {
+      valid_search : true,
+      enable_bid_indent : false,
+      without_offer : false,
+      set_default_value: function(){
+        var that = this
+        that.valid_search  = true
+        that.enable_bid_indent = false
+        that.without_offer = false
+        if($scope.srvc.is_custom_bid_service || $scope.srvc.custom_handled_category){
+          that.without_offer = true
+          $scope.active.tab = 1
+        }
+      },
+      checkBidIndentEnabled :function(){
+        var that = this
+        that.set_default_value()
+        if($scope.active.tab == 1){
+          if($scope.srvc.is_bid_intent){
+            that.without_offer = true
+            that.enable_bid_indent = false
+          }else{
+            $scope.search_results = []
+            that.enable_bid_indent = true
+            that.valid_search  = false
+          }
+        }
+      }
+    }
+    $scope.get_display_name = function(key,value){
+      if(key == "amc_category" && !value.includes($scope.srvc.custom_filter_value)){
+        value = $scope.srvc.amc_category_name[value]
+      }else if(_.includes(value, $scope.srvc.custom_filter_value)){
+        value = _.replace(value, $scope.srvc.custom_filter_value, "  (Other)")
+      }
+      return value
+    }
+
+    $scope.hide_columns = function(){
+      if(!$scope.srvc.input_valid){
+        _.forEach($scope.headers, function(header){
+          if(header.field == 'final' || header.type=="addon_price" || header.type=="rsp"){
+            header.showable = false
+          }
+        })
+      }
+    }
+    $scope.set_default_value_usage = function(usage, contract){
+      _.forEach(_.keys($scope.srvc.est), function(usage_key){
+        usage[usage_key] = _.isNil(usage[usage_key]) ? 1 : usage[usage_key]
+      })
+      return usage
+    }
+    $scope.set_default_value_contract = function(contract){
+      _.forEach(["start_date", "end_date"], function(contract_key){
+        contract[contract_key] = contract[contract_key] || $filter('date')(new Date(),'yyyy-MM-dd')
+      })
+      return contract
+    }
+
+    var compare_add_to_boq_cart = function(c_data){
+      compareService.add_to_cart(c_data).then(function(response){
+        $scope.boq_service_catalog.new_cart = false
+        if(response.meta.result == "success"){
+          notify.success('$a$.m.srvc.rate_sheet_search.add_to_cart_success')
+          $scope.srvcBoqData.data.reload_cart = true
+          $scope.srvcBoqData.data.number= response.number
+          $scope.srvcBoqData.data.cart = {}
+          $state.go('show', {number: response.number})
+        }else{
+          notify.error(response.meta.message.join(", "))
+        }
+      })
+    }
+
+    $scope.add_item_to_boq_cart = function(){
+      if(!$scope.srvc.input_valid){
+        notify.error("Please enter all the fields")
+        return
+      }
+      var quantity = _.chain($scope.consignee.selected_consignee).map("required_quantity").sum().value()
+      c_data = $scope.boq_service_catalog
+      c_data["compare_data"]["catalogs"][0]["search_params"]["contract"]=$scope.set_default_value_contract(angular.copy($scope.contract))
+      c_data["compare_data"]["catalogs"][0]["search_params"]["usage"]=$scope.set_default_value_usage(angular.copy($scope.usage))
+
+      _.chain($scope.selected_facet || {}).map(function(value, key){_.remove(value, function(v){ return v == $scope.srvc.custom_filter_value})}).value()
+
+      c_data["compare_data"]["catalogs"][0]["search_params"]["filters"]= $scope.selected_facet
+
+      c_data["compare_data"]["catalogs"][0]["search_params"]["consignee_data"]= lower_case_consignee()
+      var total = c_data["compare_data"]["catalogs"][0]["offers"][0]["total"] * quantity
+      c_data["compare_data"]["catalogs"][0]["offers"][0]["total"] = total
+      c_data["compare_data"]["catalogs"][0]["offers"][0]["final"] = (total + "")
+      c_data["compare_data"]["offers_summary"][0]["final"] = (total + "")
+      _.forEach($scope.selected_facet, function(value, key){
+        c_data["compare_data"]["catalogs"][0]["offers"][0][key] = value
+      })
+      if(!_.isEmpty($scope.srvc.buyer_parameters))
+        c_data["compare_data"]['data_to_be_collected'] = {market: {values: formated_buyer_parameters($scope.srvc.buyer_parameters)}}
+      if($scope.srvcBoqData && $scope.srvcBoqData.data && $scope.srvcBoqData.data.in_boq_order_mode && $scope.srvcBoqData.data.edit_item){
+        c_data["edit_boq_item"] = {}
+        c_data["edit_boq_item"]["order_item"] = $scope.srvcBoqData.data.orderItem.id
+      }
+      if($scope.srvcBoqData && $scope.srvcBoqData.data.cart[$stateParams.number])
+        c_data["new_cart"] = true
+      compare_add_to_boq_cart(c_data)
+    }
+
+    var get_service_catalog = function(quantity) {
+      if(!$scope.srvc.in_boq_order_mode || !$scope.srvc.specifications.boq_mode_enabled ||  !_.isEmpty($scope.boq_service_catalog))
+        return
+      boqService.getBoqServiceCatalog($scope.bn_id, quantity).then(function (response) {
+        $scope.boq_service_catalog = response.meta_data
+      })
+    }
+
+    $scope.get_results = function(page=1){
+      $scope.show_disabled_add_to_cart_msg = false
+      $scope.current_page = page;
+      $scope.OptionalOfferPrice.checkBidIndentEnabled()
+      var usage = $scope.set_default_value_usage(angular.copy($scope.usage))
+      var contract = $scope.set_default_value_contract(angular.copy($scope.contract))
+      if($scope.OptionalOfferPrice.valid_search && $scope.validate_inputs() && $scope.srvc.search_allowed && $scope.validate_consignee() && $scope.validate_usage()){
+        var consignee_data = lower_case_consignee();
+        if (!$scope.srvc.in_boq_order_mode){
+          srcService.get_results($stateParams['id'],$scope.selected_facet,usage,$scope.qcbs_params,consignee_data,contract,$scope.current_page, $scope.OptionalOfferPrice.without_offer).then(function(response){
+            $scope.response = response;
+            if($scope.response.meta.result != 'success' ){
+              notify.error($scope.response.meta.message)
+            }
+            $scope.srvc.compare_flag = {}
+            $scope.search_results = $scope.response.results
+            $scope.isNextDisabled = $scope.response.next_disable;
+            $scope.headers = $scope.response.headers;
+            $scope.compare = [];
+            $scope.compare_tray = {}
+            $scope.l1_added_for_compare = false
+            $scope.srvc.min_compare_length = $scope.response.min_no_of_item_to_compare || 3
+            $scope.srvc.hide_search_input = true
+            $scope.srvc.show_service_count = 20;
+            $scope.srvc.add_service_count = 20;
+            $scope.applied_facet = angular.copy($scope.selected_facet)
+            $scope.srvc.new_cart = true;
+            $scope.hide_columns()
+            if($scope.srvc.is_bid_only){
+              $scope.pre_add_to_cart(0)
+            }
+            _.forEach(response["_headers"]["role_name"],function(value,role){
+              $scope.srvc[role] = value
+            })
+            $scope.show_disabled_add_to_cart_msg  = _.some($scope.response.results, {'final': "0.00"})
+          })
+        }
+        else
+          $scope.applied_facet = angular.copy($scope.selected_facet)
+        return true
+      }else{
+        if (!_.isEmpty($scope.usageArr)){
+          notify.error('$a$.m.srvc.rate_sheet_search.empty_usage_values', {translationValues: {usage_arr: $scope.usageArr.join(', ')}})
+        }
+        return false
+      }
+    }
+    $scope.capitalizeFirstLetter =function(string) {
+      return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+    $scope.get_seller_data = function(i){
+      var row = $scope.search_results[i];
+      $scope.seller = {};
+      $scope.seller.name = $scope.capitalizeFirstLetter(row["seller_name"])
+      var seller_id = row["seller_id"];
+      var show_seller_details = row["show_seller_details"]
+      var service_id = $scope.bn_id;
+      if(!show_seller_details){
+        notify.error('$a$.m.srvc.rate_sheet_search.seller_details_view_restriction_error')
+        return;
+      }
+      srcService.get_seller_details(service_id,seller_id,show_seller_details).then(function(response){
+          $scope.seller.certificates = response.seller_certificate_hash;
+          $scope.seller.is_startup = row["is_startup"];
+          $scope.seller.is_mse = row["is_mse"];
+          $scope.seller.accepted_order_count = response.approved_project_details["total_verified_projects"]["value"];
+          $scope.seller.approved_project_value = response.approved_project_details["total_project_value"]["value"];
+          $scope.srvc.show_seller_popup = true;
+      })
+    }
+
+    $scope.enable_custom_filter = function(){
+      if($scope.srvc.specifications){
+        if ($scope.srvc.is_bid_intent){
+          _.forEach($scope.srvc.core_facets, function(facet){
+            if(facet.custom_filter && !_.includes(facet.set, $scope.srvc.custom_filter_value))
+              facet.set = facet.set.concat($scope.srvc.custom_filter_value)
+          })
+        }else{
+          _.forEach($scope.srvc.core_facets, function(facet){
+            _.remove(facet.set, function(val){
+              return $scope.srvc.custom_filter_value == val
+            })
+          })
+          _.forEach($scope.selected_facet, function(selected_values, k){
+            val = _.remove(selected_values, function(val){
+              return _.endsWith(val, $scope.srvc.custom_filter_value)
+            })
+          })
+        }
+      }
+    }
+
+    $scope.set_bid = function(){
+      if($scope.srvc.in_boq_order_mode){
+        $scope.srvc.is_bid_intent = true
+        $scope.enable_custom_filter()
+        return // For BOQ bid intent and compatibility data is alredy set.
+      }
+      srcService.setBid($scope.srvc.is_bid_intent).then(function(response){
+        $scope.srvc.is_bid_intent = response.is_bid
+        if($scope.srvc.is_bid_intent){
+          srcService.getCurrentCart($stateParams['id'], $scope.srvc.in_boq_order_mode).then(function(response){
+            set_compatibility_data(response)
+          })
+        }else{
+          $scope.srvc.is_cart_compatible = false
+          $scope.srvc.is_contrat_dates_available = false
+        }
+        $scope.search_results =[]
+        $scope.enable_custom_filter()
+      })
+    }
+
+    $scope.update_consignees = function(){
+      if(!$scope.srvc.is_bid_intent && $scope.consignee && $scope.consignee.selected_consignee && $scope.consignee.selected_consignee.length > 0)
+        $scope.consignee.selected_consignee = [$scope.consignee.selected_consignee[0]]
+    }
+
+    $scope.custom_filter_selected = function(){
+      var selected = false
+       _.forEach($scope.selected_facet, function(selected_values, k){
+        selected = selected || _.some(selected_values, _.method('includes', $scope.srvc.custom_filter_value))
+       })
+       return selected
+    }
+
+    $scope.remove_custom_spec_value  = function(selectedsfacet){
+      _.forEach(selectedsfacet, function(selected_values, k){
+          val = _.remove(selected_values, function(val){
+            return val == $scope.srvc.custom_filter_value
+          })
+        })
+      return selectedsfacet
+    }
+
+    var build_compare_data = function(row){
+      var consignee_data = lower_case_consignee()
+      var data = {
+        'service': true,
+        'service_catalog': row,
+        'row_id': row.id,
+        'browse_nodes_id':row.bn_id,
+        'svc_headers': $scope.headers,
+        'filters' : $scope.remove_custom_spec_value(angular.copy($scope.selected_facet)),
+        'usage' : $scope.usage,
+        'contract': $scope.contract,
+        'qcbs': $scope.qcbs_params,
+        'selected_consignees' : consignee_data
+      }
+      return data;
+    }
+
+    $scope.create_new_cart = function(){
+      console.log("clearing cart")
+      $scope.srvc.is_cart_compatible = false
+    }
+
+    $scope.set_new_cart = function(v){
+      $scope.srvc.new_cart = v;
+      $scope.srvc.open_cart_popup = false;
+      $scope.add_to_cart($scope.index_to_be_add)
+    }
+    $scope.report_offer = function(i){
+      var row= $scope.search_results[i];
+      var data = {
+        "service_id" : row.bn_id,
+        "service_name" : $scope.srvc.display_name,
+        "seller_id" : row.external_ref_id || 'N/A',
+        "seller_name" : row.seller_name ,
+        "img_url" : $scope.srvc.image,
+        "offering_type" : "services"
+      };
+      _.forEach($scope.headers,function(header){
+        if(header.showable && header.field !="seller_name"){
+          data[header.field] = {
+            "display": header.display,
+            "value":row[header.field] || 'N/A'
+          }
+        }
+      })
+
+      $scope.srvc.showIframe = true;
+      $scope.iframe_url=$sce.trustAsResourceUrl($scope.srvc.incident_report_url+"?service_details="+Base64.encode(JSON.stringify(data)))
+      console.log("data to push",data)
+    }
+    $scope.trustAsHtml = function(string) {
+      return $sce.trustAsHtml(string);
+    }
+    $scope.pre_add_to_cart = function(i){
+      if($scope.validate_filters()){
+        var buyerParams = $scope.srvc.specifications.data_to_be_collected.market || {}
+        if(!(_.isEmpty(buyerParams) || _.isEmpty(buyerParams.modelSchema) || _.isEmpty(buyerParams.uiSchema))){
+          $scope.$broadcast("schemaFormValidate");
+          if(!$scope.srvc.buyer_parameters_form.$valid){
+            notify.error('$a$.m.srvc.rate_sheet_search.mandatory_buyer_param_error')
+            return false
+          }
+        }
+        if($scope.srvc.in_boq_order_mode && $scope.srvc.is_bid_intent){
+          $scope.add_item_to_boq_cart()
+        }
+        if($scope.srvc.is_bid_intent && $scope.srvc.is_cart_compatible && (_.isEmpty($scope.srvc.compatible_contract_date) || ($scope.srvc.compatible_contract_date.end_date == $scope.contract.end_date && $scope.srvc.compatible_contract_date.start_date == $scope.contract.start_date))){
+          console.log("OPen popup")
+          $scope.index_to_be_add = i;
+          $scope.srvc.open_cart_popup = true;
+        }
+        else{
+          $scope.srvc.new_cart = true
+          console.log("No need popup",$scope.srvc.new_cart)
+          $scope.add_to_cart(i)
+        }
+      }
+    }
+
+    $scope.preview_formula=function(i, flag) {
+      if($scope.validate_filters()){
+        var buyerParams = $scope.srvc.specifications.data_to_be_collected.market || {}
+        if(!(_.isEmpty(buyerParams) || _.isEmpty(buyerParams.modelSchema) || _.isEmpty(buyerParams.uiSchema))){
+          $scope.$broadcast("schemaFormValidate");
+          if(!$scope.srvc.buyer_parameters_form.$valid){
+            notify.error("Enter all buyer parameters")
+            return false
+          }
+        }
+
+        var row= $scope.search_results[i];
+        var data = build_compare_data(row)
+        $scope.srvc.preview_formula_details = {}
+        srcService.get_price_breakup(data).then(function(response){
+          if(response.meta.result == 'invalid_input'){
+            notify.error(response.meta.message[0])
+            return false
+          }
+
+          $scope.srvc.open_preview_formula_popup = true
+          if($scope.is_price_on_demand() || flag == "show_preview_formula") {
+            $scope.srvc.show_price_breakup = false
+          } else {
+            $scope.srvc.show_price_breakup = true
+          }
+
+          $scope.srvc.preview_formula_details = response
+        });
+      }
+    }
+
+    $scope.add_to_cart=function(i) {
+      var row= $scope.search_results[i];
+      var data = build_compare_data(row)
+      data['add_to_cart'] = true
+      data['is_l1'] = (row['is_l1'] || false)
+      compareService.add_to_compare(data).then(function(response){
+        if(response.catalogs && response.offers_summary){
+          var data_to_be_collected = {}
+          if(!_.isEmpty($scope.srvc.buyer_parameters)){
+            data_to_be_collected.market = {}
+            data_to_be_collected.market.values = formated_buyer_parameters($scope.srvc.buyer_parameters)
+          }
+          var c_data = {
+            'compare_data': {
+              'catalogs': response.catalogs,
+              'offers_summary': response.offers_summary,
+              'data_to_be_collected': data_to_be_collected
+            },
+            'index': 0,
+            'new_cart':$scope.srvc.new_cart,
+            'price_in_bid': $scope.is_price_on_demand()
+          }
+          if ($scope.srvc.hasOwnProperty('is_custom_bid_service') && $scope.srvc.is_custom_bid_service)
+            c_data['compare_data']['similar_services_for_custom_bid'] = $scope.model.services
+          compareService.add_to_cart(c_data).then(function(response){
+            if(response.meta.result == "success"){
+              // $window.location.href = BAB.endpoints.app_url('site',response.redirect_url)
+              if(response.number){
+                // if($scope.srvc.offer_price_only_in_bid && response.redirect_url){
+                //   $window.location.href = BAB.endpoints.app_url('site', response.redirect_url)
+                // }
+                // else{
+                  notify.success('$a$.m.srvc.rate_sheet_search.add_to_cart_success')
+                  BAB.Cart.setPurchase(response.number)
+                  BAB.Cart.show();
+                  srcService.getCurrentCart($stateParams['id']).then(function(response){
+                    set_compatibility_data(response)
+                  })
+                // }
+              }
+            }else{
+              notify.error(response.meta.message.join(", "))
+            }
+          })
+        }else{
+          notify.error('$a$.m.srvc.rate_sheet_search.add_to_cart_failure_error')
+        }
+      })
+    }
+    $scope.add_to_compare = function(i, push_for_compare_tray, l1_added_manually){
+      var row = $scope.search_results[i]
+      var data = build_compare_data(row)
+      if($scope.validate_filters()){
+        data['is_l1'] = (row['is_l1'] || false)
+        if(row.is_l1){
+          data['service_catalog']['l1_added_manually'] = l1_added_manually
+        }
+
+        return compareService.add_to_compare(data).then(function(response){
+          if(data.is_l1)
+            $scope.l1_added_for_compare = true
+          $scope.compare_tray = response
+          if(push_for_compare_tray == false)
+            $scope.compare_tray.offers_summary = _.chain($scope.compare_tray.offers_summary).filter(function(offer){return !offer.is_l1}).value()
+          if($scope.compare.indexOf(row.id) == -1) $scope.compare.push(row.id)
+          return response
+        })
+      }else{
+        $scope.srvc.compare_flag[i] = false
+      }
+    }
+    $scope.remove_from_compare = function(r){
+      var data = {
+          'service': true,
+          'row_id': r.id,
+          'browse_nodes_id':r.bn_id
+        }
+      compareService.remove_from_compare(data).then(function(response){
+        if(r.is_l1)
+          $scope.l1_added_for_compare = false
+        $scope.compare.splice($scope.compare.indexOf(r.id),1)
+        $scope.compare_tray = response
+        console.log($scope.compare)
+      })
+    }
+    $scope.compare_action = function(i,add){
+      if(add){
+        var r = $scope.search_results[i]
+        $scope.add_to_compare(i, null, r.is_l1)
+      }else{
+        var r = $scope.search_results[i]
+        $scope.remove_from_compare(r)
+      }
+      $scope.srvc.min_compare_length = 3
+    }
+    $scope.select_remove_offer = function(solr_id){
+      var index;
+      _.forEach($scope.search_results,function(res,i){
+        if(res.id == solr_id)
+            {
+              index = i
+              return false
+            }
+      })
+      $scope.compare_action(index,false)
+    }
+
+    $scope.compareOfferings = function(bn_id){
+        if($scope.srvc.compare_flag[0] == true && $scope.l1_added_for_compare)
+          compareService.compare_service(bn_id)
+        else{
+          $scope.l1_added_for_compare = true
+          $scope.add_to_compare(0, false).then(function(response){
+            compareService.compare_service(bn_id)
+          })
+        }
+    }
+
+    $scope.find_helptext = function(key){
+      for(i=0;i<spec_data.specifications.certifications.length;i++)
+      {
+        if(spec_data.specifications.certifications[i].code==key)
+        {
+          return spec_data.specifications.certifications[i].helptext;
+        }
+      }
+      return "";
+    }
+  }
+])
+
+.directive('coreFilterList', [function(){
+  return {
+    restrict: 'E',
+    scope: {
+      srvc: '=',
+      selectedFacet: '=',
+      getResult: '&',
+      fStaus:"="
+    },
+    templateUrl: "core_filter_list.html",
+    controller: ['$scope','srcService', function($scope, srcService){
+      $scope.updateFacets = function(selected_facet){
+        console.log(selected_facet)
+        _.forEach($scope.srvc.core_facets, function(facet){
+          if(facet.depends_on && _.includes(facet.depends_on, selected_facet.key)){
+            $scope.selectedFacet[facet.key] = []
+            options = {
+              service_id: $scope.srvc.id,
+              category_id: $scope.selectedFacet[selected_facet.key][0]
+            }
+            srcService.get_autocomplete_data(facet.remote_url, options).then(function(response){
+              if(response.meta.result == "success"){
+                facet.set = response.list
+                facet.selected = null
+                if(selected_facet.key=="amc_category"){
+                  if(facet.key!=selected_facet.key && facet.custom_filter && facet.set.indexOf($scope.srvc.custom_filter_value) < 0)
+                    facet.set.push($scope.srvc.custom_filter_value)
+                }
+
+              }else{
+                //unable to fetch data
+              }
+            })
+          }
+
+        })
+      }
+    }]
+  }
+}])
+
+.directive('addonFilterList', [function(){
+  return {
+    restrict: 'E',
+    scope: {
+      srvc: '=',
+      selectedFacet: '=',
+      getResult: '&',
+      fStatus:"="
+    },
+    templateUrl: "addon_filter_list.html",
+    controller: ['$scope','srcService', function($scope, srcService){
+      $scope.group_tags={}
+      $scope.group_tags_default_value = "None"
+      $scope.group_tags[$scope.group_tags_default_value] = []
+      $scope.group_tags_hint = {}
+      $scope.srvc.specifications.tags = $scope.srvc.specifications.tags || {}
+      $scope.srvc.specifications.tags["spec_group_tags"] = $scope.srvc.specifications.tags["spec_group_tags"] || []
+      _.forEach($scope.srvc.specifications.tags["spec_group_tags"],function(group){
+        $scope.group_tags[group.name] = []
+        $scope.group_tags_hint[group["name"]] = group["helptext"];
+      })
+      _.forEach($scope.srvc.addon_facets,function(addon){
+        if(addon.group_tag && (addon.group_tag in $scope.group_tags)){
+           $scope.group_tags[addon.group_tag].push(addon)
+        }
+        else{
+          $scope.group_tags[$scope.group_tags_default_value].push(addon)
+        }
+      })
+    }]
+  }
+}])
+
+.directive('filter', ['$compile', function($compile) {
+  return {
+    restrict: 'E',
+    scope: {
+      facet : '=',
+      status: '=',
+      selectedFacet: '=',
+      key: '=',
+      getResult: '&',
+      srvc: '=',
+      onChange: '&'
+    },
+    compile: function(element, attributes) {
+      var linkFunction = function (scope, element, attrs) {
+        scope.selectedFacet[scope.key] = scope.selectedFacet[scope.key] || {}
+        var tag = '<div class="facet '+ scope.facet.type+'" key=key facet=facet status=status selection=selectedFacet selected-facet=selectedFacet[key] srvc=srvc get-result=getResult() on-change=onChange(facet)></div>';
+        element.html($compile(tag)(scope));
+      }
+      return linkFunction;
+    }
+  }
+}])
+
+.directive('sellerLocation',function(){
+  return {
+    restrict: 'C',
+    templateUrl: 'seller_location_autocomplete.html',
+    scope: {
+      facet: '=',
+      status: '=',
+      selectedFacet: '=',
+      getResult: '&',
+      srvc:'=',
+      key:"="
+    },
+    controller: ['$scope','srcService','notificationService',function($scope,srcService,notify){
+       if(!_.isArray($scope.selectedFacet)) {
+        $scope.selectedFacet = [];
+       }
+       $scope._ = _;
+       $scope.getLocations = function(term) {
+        return srcService.get_locations($scope.facet.remote_url,term).then(function(response){
+          return _.reject(response.locations,function(location){
+            return _.filter($scope.selectedFacet,function(f){
+              return f.code == location.code
+            }).length > 0
+          })
+        });
+      }
+      $scope.onSelect = function($item, $model, $label){
+          var limit = parseInt($scope.facet.limit)
+          if(!isNaN(limit) && limit >1){
+            if($scope.selectedFacet.length < limit){
+              $scope.selectedFacet.push($item);
+              $scope.getResult()
+            }
+            else{
+              notify.error('$a$.m.srvc.rate_sheet_search.max_limit_reached')
+            }
+          }
+          else{
+             $scope.selectedFacet.splice(0,$scope.selectedFacet.length,$item);
+             $scope.getResult()
+          }
+        }
+    }]
+  }
+})
+.directive('autoCompleteSingleSelect', function(){
+  return {
+    restrict: 'C',
+    templateUrl: "autocomplete_single_select.html",
+    scope: {
+      facet: '=',
+      status: '=',
+      selectedFacet: '=',
+      getResult: '&',
+      srvc:'=',
+      key:"=",
+      selection:"=",
+      onChange: '&'
+    },
+    controller: ['$scope', '$timeout','srcService', function($scope, $timeout, srcService){
+      if(!_.isArray($scope.selectedFacet)) {
+        $scope.selectedFacet = [];
+      }
+      $scope._ = _;
+      $scope.source = {
+        list: []
+      }
+      if($scope.facet.eager_load){
+        options = {
+          service_id: $scope.srvc.id
+        }
+        srcService.get_autocomplete_data($scope.facet.remote_url, options).then(function(response){
+          if(response.meta.result == "success"){
+            $scope.facet.set = response.list
+            if($scope.key == "amc_category"){
+              $scope.transform_category_names_to_hash($scope.facet.set)
+            }
+          }else{
+            //unable to fetch data
+          }
+        })
+      }
+      $scope.updateFacet = function(selected_facet){
+        console.log(selected_facet)
+        if(selected_facet.key=="amc_category"){
+        _.forEach($scope.srvc.core_facets, function(facet){
+          if(facet.key!=selected_facet.key && facet.custom_filter && facet.set.indexOf($scope.srvc.custom_filter_value) < 0)
+            facet.set.push($scope.srvc.custom_filter_value)
+        })
+      }}
+      $scope.transform_category_names_to_hash = function(list){
+        var hash = {}
+        _.forEach(list,function(cat){
+          hash[cat["id"]] = cat["display_name"]
+        })
+        $scope.srvc.amc_category_name = hash
+        console.log($scope.srvc.amc_category_name);
+      }
+      $scope.toggle = function(option){
+        if(_.isArray(option)){
+          option = option[0]
+        }
+        if ($scope.selectedFacet.indexOf(option) === -1) {
+          $scope.selectedFacet.push(option);
+        } else {
+          $scope.selectedFacet.splice($scope.selectedFacet.indexOf(option), 1);
+          $scope.srvc.update_down_stream_dependency($scope.selection, $scope.key)
+        }
+      }
+      $scope.toggleOption = function(option){
+        $scope.toggle(option);
+        if(!$scope.srvc.search_allowed){
+          $scope.toggle(option);
+        }
+         _.remove($scope.selectedFacet,function(facet){
+          return !facet.includes($scope.srvc.custom_filter_value)
+        })
+        $scope.getResult();
+      }
+      $scope.onSelect = function(selected){
+        console.log("selected", selected)
+        $scope.selectedFacet[0] = selected.id
+        _.remove($scope.selectedFacet,function(facet){
+          return facet.includes($scope.srvc.custom_filter_value)
+        })
+        $scope.onChange($scope.facet)
+        // $scope.updateFacet($scope.facet)
+        $scope.getResult()
+      }
+    }]
+  }
+})
+
+.directive('range', function(){
+  return {
+    restrict: 'C',
+    templateUrl: "range_facet.html",
+    scope: {
+      facet: '=',
+      status: '=',
+      selectedFacet: '=',
+      getResult: '&',
+      srvc: "=",
+      key:"="
+    },
+    controller: ['$scope', '$timeout', function($scope, $timeout){
+      // $scope.refreshSlider = function () {
+      //   $timeout(function () {
+      //     $scope.$broadcast('rzSliderForceRender');
+      //   });
+      // };
+      // $scope.$watch(function(){return $scope.status},function(newvalue,oldValue){
+      //   $scope.refreshSlider();
+      // })
+      // $scope.selectedFacet.min = $scope.facet.range[0]
+      // $scope.selectedFacet.max = $scope.facet.range[1]
+      // $scope.slider_options ={
+      //   floor: $scope.facet.range[0],
+      //   // floor: 0,
+      //   ceil: $scope.facet.range[1],
+      //   // ceil: 2000,
+      //   onEnd: function(id) {
+      //   },
+      //   noSwitching: true,
+      // }
+    }]
+  }
+})
+.directive('sellerGreaterThan', function(){
+  return {
+    restrict: 'C',
+    templateUrl: "facet_greater_than.html",
+    scope: {
+      facet: '=',
+      status: '=',
+      selectedFacet: '=',
+      getResult: '&',
+      srvc: "=",
+      key:"=",
+      selection:"="
+    },
+    controller: ['$scope', 'notificationService', function($scope, notify){
+      $scope.check_get_result = function(){
+        if(!_.isNaN(parseFloat($scope.selectedFacet.min))){
+          $scope.getResult()
+        }else{
+          notify.error('$a$.m.srvc.rate_sheet_search.invalid_number')
+        }
+      }
+    }]
+  }
+})
+.directive('multiSelect', function(){
+  return {
+    restrict: 'C',
+    templateUrl: "multiselect_facet.html",
+    scope: {
+      facet: '=',
+      status: '=',
+      selectedFacet: '=',
+      getResult: '&',
+      srvc:'=',
+      key:"=",
+      selection:"="
+    },
+    controller: ['$scope', '$timeout', function($scope, $timeout){
+      if(!_.isArray($scope.selectedFacet)) {
+        $scope.selectedFacet = [];
+      }
+      $scope._ = _;
+      if(_.isObject($scope.srvc.rate_sheet_defn) && $scope.srvc.rate_sheet_defn.hasOwnProperty($scope.key) && $scope.srvc.rate_sheet_defn[$scope.key].dependency_on){
+        $scope.$watch(function(){return $scope.selection[$scope.srvc.rate_sheet_defn[$scope.key].dependency_on];},function(newvalue,oldvalue){
+          if(newvalue && oldvalue){
+            $scope.list = $scope.srvc.dep_rules.apply_deps_for_specific_row($scope.selection[$scope.srvc.rate_sheet_defn[$scope.key].dependency_on],$scope.srvc.rate_sheet_defn[$scope.key].dependency_on,$scope.key, $scope.selection)
+            console.log("$scope.list",$scope.list)
+            $scope.selectedFacet
+            var intersection_value = _.intersection($scope.list, $scope.selectedFacet)
+            custom_value = []
+            _.forEach($scope.selectedFacet, function(val){
+                if(_.endsWith(val, $scope.srvc.custom_filter_value))
+                  custom_value.push(val)
+              })
+            if(intersection_value.length > 0){
+              $scope.selectedFacet = _.concat(intersection_value, custom_value)
+            }else{
+              $scope.selectedFacet = custom_value
+            }
+          }
+        },true);
+      }else{
+        $scope.list = $scope.facet.set
+      }
+      $scope.toggle = function(option){
+        if(_.isArray(option)){
+          option = option[0]
+        }
+        if ($scope.selectedFacet.indexOf(option) === -1) {
+          $scope.selectedFacet.push(option);
+        } else {
+          $scope.selectedFacet.splice($scope.selectedFacet.indexOf(option), 1);
+          $scope.srvc.update_down_stream_dependency($scope.selection, $scope.key)
+        }
+      }
+      $scope.toggleOption = function(option){
+        $scope.toggle(option);
+        if(!$scope.srvc.search_allowed){
+          $scope.toggle(option);
+        }
+        $scope.getResult();
+      }
+      $scope.srvc.setCustomBoqValues($scope)
+
+      $scope.filterWithSubString = function(item){
+        $scope.searchKey = $scope.searchKey || ''
+        return _.includes(_.toLower(item), _.toLower($scope.searchKey))
+      }
+
+    }]
+  }
+})
+.directive('sellerMultiselectOr', function(){
+  return {
+    restrict: 'C',
+    templateUrl: "multiselect_facet.html",
+    scope: {
+      facet: '=',
+      status: '=',
+      selectedFacet: '=',
+      getResult: '&',
+      srvc:'=',
+      key:"=",
+      selection:"="
+    },
+    controller: ['$scope', '$timeout', function($scope, $timeout){
+      if(!_.isArray($scope.selectedFacet)) {
+        $scope.selectedFacet = [];
+      }
+      $scope._ = _;
+      if(_.isObject($scope.srvc.rate_sheet_defn) && $scope.srvc.rate_sheet_defn.hasOwnProperty($scope.key) && $scope.srvc.rate_sheet_defn[$scope.key].dependency_on){
+        $scope.$watch(function(){return $scope.selection[$scope.srvc.rate_sheet_defn[$scope.key].dependency_on];},function(newvalue,oldvalue){
+          if(newvalue && oldvalue){
+            $scope.list = $scope.srvc.dep_rules.apply_deps_for_specific_row($scope.selection[$scope.srvc.rate_sheet_defn[$scope.key].dependency_on], $scope.srvc.rate_sheet_defn[$scope.key].dependency_on, $scope.key, $scope.selection)
+            console.log("$scope.list",$scope.list)
+            var intersection_value = _.intersection($scope.list, $scope.selectedFacet)
+             custom_value = []
+            _.forEach($scope.selectedFacet, function(val){
+                if(_.endsWith(val, $scope.srvc.custom_filter_value))
+                  custom_value.push(val)
+              })
+            if(intersection_value.length > 0){
+              $scope.selectedFacet = _.concat(intersection_value, custom_value)
+            }else{
+              $scope.selectedFacet = custom_value
+            }
+          }
+        },true);
+      }else{
+        $scope.list = $scope.facet.set
+      }
+      $scope.toggle = function(option){
+        if(_.isArray(option)){
+          option = option[0]
+        }
+        if ($scope.selectedFacet.indexOf(option) === -1) {
+          $scope.selectedFacet.push(option);
+        } else {
+          $scope.selectedFacet.splice($scope.selectedFacet.indexOf(option), 1);
+          $scope.srvc.update_down_stream_dependency($scope.selection, $scope.key)
+        }
+      }
+      $scope.toggleOption = function(option){
+        $scope.toggle(option);
+        if(!$scope.srvc.search_allowed){
+          $scope.toggle(option);
+        }
+        $scope.getResult();
+      }
+      $scope.srvc.setCustomBoqValues($scope)
+    }]
+  }
+})
+
+.directive('singleSelect', function(){
+  return {
+    restrict: 'C',
+    templateUrl: "singleselect_facet.html",
+    scope: {
+      facet: '=',
+      status: '=',
+      selectedFacet: '=',
+      getResult: '&',
+      srvc: '=',
+      key:"=",
+      selection:"="
+    },
+    controller: ['$scope', '$timeout', function($scope, $timeout){
+      if(!_.isArray($scope.selectedFacet)) {
+        $scope.selectedFacet = [];
+      }
+      $scope._ = _;
+      if(_.isObject($scope.srvc.rate_sheet_defn) && $scope.srvc.rate_sheet_defn.hasOwnProperty($scope.key) && $scope.srvc.rate_sheet_defn[$scope.key].dependency_on){
+        $scope.$watch(function(){return $scope.selection[$scope.srvc.rate_sheet_defn[$scope.key].dependency_on];},function(newvalue,oldvalue){
+          if(newvalue && oldvalue){
+            $scope.list = $scope.srvc.dep_rules.apply_deps_for_specific_row($scope.selection[$scope.srvc.rate_sheet_defn[$scope.key].dependency_on], $scope.srvc.rate_sheet_defn[$scope.key].dependency_on, $scope.key, $scope.selection)
+            console.log("$scope.list",$scope.list)
+            var intersection_value = _.intersection($scope.list, $scope.selectedFacet)
+             custom_value = []
+            _.forEach($scope.selectedFacet, function(val){
+                if(_.endsWith(val, $scope.srvc.custom_filter_value))
+                  custom_value.push(val)
+              })
+            if(intersection_value.length > 0){
+              $scope.selectedFacet = _.concat(intersection_value, custom_value)
+            }else{
+              $scope.selectedFacet = custom_value
+            }
+          }
+        },true);
+      }else{
+        $scope.list = $scope.facet.set
+      }
+      $scope.toggle = function(option){
+        if(_.isArray(option)){
+          option = option[0]
+        }
+        if (_.isEmpty($scope.selectedFacet)) {
+          $scope.selectedFacet.push(option);
+        }else if ($scope.selectedFacet.indexOf(option) != -1){
+          $scope.selectedFacet.splice($scope.selectedFacet.indexOf(option), 1);
+          $scope.srvc.update_down_stream_dependency($scope.selection, $scope.key)
+        }else{
+          $scope.selectedFacet.splice(0,$scope.selectedFacet.length)
+          $scope.selectedFacet.push(option);
+        }
+      }
+      $scope.toggleOption = function(option){
+        $scope.toggle(option);
+        if(!$scope.facet.is_addon && !$scope.srvc.search_allowed){
+          $scope.toggle(option);
+        }
+        $scope.getResult();
+      }
+      $scope.srvc.setCustomBoqValues($scope)
+      $scope.filterWithSubString = function(item){
+        $scope.searchKey = $scope.searchKey || ''
+        return _.includes(_.toLower(item), _.toLower($scope.searchKey))
+      }
+    }]
+  }
+})
+
+.directive('estInput', ['$compile', function($compile) {
+  return {
+    restrict: 'E',
+    scope: {
+      est: '=',
+      usage: '='
+    },
+    compile: function(element, attributes) {
+      var linkFunction = function (scope, element, attrs) {
+        var tag = '';
+        if(scope.est.data_type == "boolean"){
+          tag = '<label><input class="est-input" type="radio" ng-model="usage" ng-value="true"> YES</label><label><input class="est-input" type="radio" ng-model="usage" ng-value="false"> NO</label>';
+        }else{
+          if (scope.est.data_type == 'number' ) {
+            tag = '<input class="est-input" type="'+ scope.est.data_type +'" ng-number-only is_non_negative=true min=0 ng-model="usage">';
+          } else {
+            tag = '<input class="est-input" type="'+ scope.est.data_type +'" ng-model="usage">';
+          }
+        }
+        element.html($compile(tag)(scope));
+      }
+      return linkFunction;
+    }
+  }
+}])
+
+.directive('serviceDetail',[function(){
+  return{
+    restrict: 'EA',
+    scope : {
+      description: '=',
+      deliverables: '=',
+      title: '@',
+      imgUrl: '@',
+      linkName: '@'
+    },
+    templateUrl: '/javascripts/site_angular/srvc/views/service_details.html'
+  }
+}])
+
+.directive('sla',[function(){
+  return{
+    restrict: 'EA',
+    scope : {
+      slaDetails: '='
+    },
+    templateUrl: '/javascripts/site_angular/srvc/views/sla.html',
+    controller: ['$scope', '$window','$sce', function($scope,$window,$sce){
+      $scope.sla_html = $sce.trustAsHtml($scope.slaDetails);
+      $scope.printSla = function(){
+        $window.print();
+      }
+
+    }]
+  }
+}])
+
+.directive('marketInputs', [function(){
+  return{
+    restrict: 'E',
+    scope : {
+      srvc: '='
+    },
+    templateUrl: 'market_inputs.html',
+    controller: ['$scope', function($scope){
+      $scope.srvc.buyer_parameters = $scope.srvc.buyer_parameters || {}
+      try{
+        $scope.schema = $scope.srvc.specifications.data_to_be_collected.market.buyer || {}
+      }
+      catch(exception){
+        console.log(exception)
+        $scope.schema = {}
+      }
+    }]
+  }
+}])
+
+.directive('sellerRating', [function(){
+  return{
+    restrict: 'E',
+    scope:{
+      rating:'=',
+      ratingDisplayText: '@'
+    },
+    templateUrl: '/javascripts/site_angular/srvc/views/seller_ratings.html',
+    controller:['$scope', function($scope){
+      $scope.getStars = function(rating) {
+        // Get the value
+        var val = parseFloat(rating);
+        // Turn value into number/100
+        var size = val/5*100;
+        return size + '%';
+      }
+    }]
+  }
+}])
+
+angular.module('srvc')
+.directive('boqSearchServiceDirective',function(){
+  return {
+    restrict: 'EA',
+    templateUrl: '/javascripts/site_angular/srvc/views/boq/boq_search_service.html',
+    controller: ['$scope','srcService','notificationService', '$state', '$stateParams', 'srvcServiceData', function($scope,srcService,notificationService, $state, $stateParams, srvcServiceData){
+      $scope.cancelAction = function(){
+        srvcServiceData.resetData()
+        $state.go('show', {number: $stateParams.number}, {relative: true, inherit: false})
+      }
+
+      $scope.can_show_definition = function(srvc, selected_facet, key){
+        return !srvc.est[key].is_addon_specific ||(srvc.est[key].is_addon_specific && _.compact(_.without(selected_facet[srvc.est[key].addon_code],'false')).length != 0)
+      }
+
+      $scope.parameter_definitions_applicable = function(srvc, selected_facet, est_params){
+        return (srvc.is_qcbs && qcbs.is_pre_qual === true) || (_.chain(est_params).filter(function(key, value){return $scope.can_show_definition(srvc, selected_facet, key)}).size().value() > 0)
+      }
+
+    }]
+  }
+})
+angular.module('srvc')
+
+.component('boqDashboard',{
+  controller: 'dashboardCntrl',
+  templateUrl: "/javascripts/site_angular/srvc/views/boq/dashboard.html"
+})
+.component('indexCart',{
+  controller: 'indexCntrl',
+  templateUrl: "/javascripts/site_angular/srvc/views/boq/index.html"
+})
+
+.component('newCart',{
+  controller: 'newCntrl',
+  templateUrl: "/javascripts/site_angular/srvc/views/boq/new.html"
+})
+
+.component('showCart',{
+  controller: 'showCntrl',
+  templateUrl: "/javascripts/site_angular/srvc/views/boq/show.html"
+})
+
+.component('addService',{
+  controller: 'addServiceCntrl',
+  templateUrl: "/javascripts/site_angular/srvc/views/boq/add_to_cart.html"
+})
+
+.component('editService',{
+  controller: 'editItemCntrl',
+  templateUrl: "/javascripts/site_angular/srvc/views/boq/edit_item.html"
+})
+angular.module('srvc')
+
+.controller('addServiceCntrl',['$scope', '$window', '$state', '$stateParams', 'boqService', 'srvcServiceData', 'browseService', 'notificationService', function($scope, $window, $state, $stateParams, boqService, srvcServiceData, browseService, notificationService){
+
+  if(_.isEmpty(srvcServiceData.data.number)){
+    $state.go('show', {number: $stateParams.number}, {relative: true, inherit: false})
+  }else if(srvcServiceData.data.reload_cart){
+    $state.go('show', {number: srvcServiceData.data.number}, {relative: true, inherit: false})
+  }
+  $scope.invalid_service = true
+  $scope.srvcBoqData = srvcServiceData
+  $scope.srvcBoqData.data.in_boq_order_mode = true
+  $scope.source = {}
+  var params = {boq_mode_enabled: true}
+  if(srvcServiceData.data && srvcServiceData.data.current_cart && srvcServiceData.data.current_cart.order_items)
+    params.bunchable_bn_ids = _.chain(srvcServiceData.data.current_cart.order_items).map('service_id').sort().value()
+  browseService.getList({search: params}).then(function(response){
+    if (response.meta.result == "invalid_input"){
+      notificationService.error(response.meta.message.join(", "))
+    }
+    if(response && response.list){
+      $scope.source.list = response.list
+    }
+  })
+  $scope.onSelect = function(){
+    var node = $scope.source.selected;
+    $scope.invalid_service = false
+    $scope.srvcBoqData.data.bn_id = node.id
+    $scope.srvcBoqData.data.compatibility_data = {
+      contract_date: srvcServiceData.data.contract,
+      is_compatible: true,
+      number: $stateParams.number,
+      is_boq_compatible: true
+    }
+  }
+  $scope.cancelAddItem = function(){
+    $state.go('show', {number: $stateParams.number}, {relative: true, inherit: false})
+  }
+  $scope.slide_cart = function(){
+    if(_.isEmpty($scope.srvc.current_boq_cart) || _.isEmpty($scope.srvc.current_boq_cart.order_items) || $scope.srvc.current_boq_cart.order_items.length <= 0){
+      notificationService.error("$a$.m.srvc.rate_sheet_search.empty_cart.msg")
+      return false
+    }
+    BAB.Cart.setPurchase($scope.srvc.current_boq_cart.number)
+    BAB.Cart.show();
+  }
+}])
+angular.module('srvc')
+
+.controller('dashboardCntrl',['$scope', '$window', '$state', '$stateParams', function($scope, $window, $state, $stateParams){
+  $scope.navigateTo = function(state){
+    $state.go(state, {}, {relative: true, inherit: false})
+  }
+}])
+
+angular.module('srvc')
+
+.controller('editItemCntrl',['$scope', '$window', '$state', '$stateParams', 'boqService', 'srvcServiceData', 'browseService', 'notificationService', function($scope, $window, $state, $stateParams, boqService, srvcServiceData, browseService, notificationService){
+
+  if(_.isEmpty(srvcServiceData.data) || _.isNil(srvcServiceData.data.number) || _.isNil(srvcServiceData.data.orderItem)){
+    $state.go('show', {number: $stateParams.number}, {relative: true, inherit: false})
+    return
+  }
+  $scope.srvcBoqData = srvcServiceData
+  boqService.setBid(true)
+  $scope.srvcBoqData.data.in_boq_order_mode = true
+  $scope.srvcBoqData.data.bn_id = srvcServiceData.data.orderItem.service_id
+  $scope.srvcBoqData.data.edit_item = true
+  $scope.srvcBoqData.data.compatibility_data = {
+    contract_date: srvcServiceData.data.contract,
+    is_compatible: true,
+    number: $stateParams.number,
+    is_boq_compatible: true
+  }
+  $scope.cancelAddItem = function(){
+    $state.go('show', {number: $stateParams.number}, {relative: true, inherit: false})
+  }
+}])
+angular.module('srvc')
+
+.controller('indexCntrl',['$scope', '$window', '$state', '$stateParams', 'boqService', 'srvcServiceData', 'notificationService', function($scope, $window, $state, $stateParams, boqService, srvcServiceData, notificationService){
+  $scope.boqFilter = true
+  $scope._ = _
+  srvcServiceData.resetData()
+  var getAllBoqCarts = function(params){
+    boqService.getAllBoqPurchases(params).then(function(response){
+      if (response.meta.result == "success"){
+        $scope.purchases = response.data
+        $scope.pagination = response.paginatation_meta
+      }else{
+        notificationService.error(response.meta.message.join(", "))
+      }
+
+    })
+  }
+
+  $scope.onPageChange = function(page){
+    getAllBoqCarts({page: page})    
+  }
+
+  $scope.performAction = function(action, purchase){
+    if (action == "new") {
+      $state.go(action, {}, {relative: true, inherit: false})
+    }else if(action == "remove"){
+      boqService.setCurrentContext(purchase.number).then(function(response){
+        if (response.meta.result == "success"){
+          boqService.removeCart(purchase.number).then(function(response){
+            if (response.meta.result == "success") {
+              notificationService.success("Removed Successfully.")
+              $state.reload()
+            }else{
+              notificationService.error(response.meta.message.join(", "))
+            }
+          })
+        }else{
+          notificationService.error(response.meta.message.join(", "))
+        }
+      })
+    }
+    else if (action == "boqdashboard") {
+      $state.go(action, {}, {relative: true, inherit: false})
+    }else if (action == "show") {
+      srvcServiceData.data.number = purchase.number
+      srvcServiceData.data.contract = purchase.contract
+      $state.go(action, {number: purchase.number}, {relative: true, inherit: false})
+    }else if (action == "checkout") {
+      boqService.setCurrentContext(purchase.number).then(function(response){
+        BAB.Cart.setPurchase(purchase.number)
+        BAB.Cart.show();
+      })
+    }
+  }
+
+  getAllBoqCarts({})
+
+}])
+
+angular.module('srvc')
+
+.controller('newCntrl',['$scope', '$window', '$state', '$stateParams', 'srvcServiceData', 'boqService', 'notificationService', '$filter', function($scope, $window, $state, $stateParams, srvcServiceData, boqService, notificationService, $filter){
+  $scope.contract = {}
+  var myDate = new Date()
+  var toDay = new Date()
+  var service_lead_days = 7
+  $scope.datepicker = {
+    start_date: {
+      opened: false,
+      options: {
+        formatYear: 'yy',
+        startingDay: 1,
+        minDate: myDate.setDate(myDate.getDate()+service_lead_days)
+      }
+    },
+    end_date: {
+      opened: false,
+      options: {
+        formatYear: 'yy',
+        startingDay: 1,
+        minDate: toDay.setDate(toDay.getDate() + service_lead_days)
+      }
+    },
+    open: function(type){
+      $scope.datepicker[type].opened = true;
+    }
+  }
+  $scope.date_formatting = function(date_type){
+    if (date_type == 'start_date'){
+      var toDay = $scope.contract && $scope.contract.start_date ? angular.copy($scope.contract.start_date) : new Date()
+      $scope.datepicker.end_date.options.minDate = toDay.setDate(toDay.getDate() + 1)
+    }
+    if (date_type == 'end_date'){
+      var toDay = $scope.contract && $scope.contract.end_date ? angular.copy($scope.contract.end_date) : null
+      $scope.datepicker.start_date.options.maxDate = toDay
+    }
+    $scope.contract[date_type] = $filter('date')($scope.contract[date_type],'yyyy-MM-dd')
+  }
+
+  $scope.invalidContract = function(){
+    return _.isEmpty($scope.contract) || _.isNil($scope.contract.start_date) || _.isNil($scope.contract.end_date)
+  }
+  $scope.navigateTo = function(state){
+    if (state == 'boqdashboard') {
+      $state.go(state, {}, {relative: true, inherit: false})
+    }else{
+      boqService.setBid(true).then(function(response){
+        if (response.meta.result == "success"){
+          srvcServiceData.data.number = "new_cart"
+          srvcServiceData.data.contract = $scope.contract
+          $state.go(state, {number: "new_cart"}, {relative: true, inherit: false})
+        }else{
+          notificationService.error(response.meta.message.join(", "))
+        }
+      })
+    }
+  }
+}])
+angular.module('srvc')
+
+.controller('showCntrl',['$scope', '$q', '$state', '$stateParams', 'boqService', 'srvcServiceData', 'consigneeService', 'notificationService','$uibModal' , function($scope, $q, $state, $stateParams, boqService, srvcServiceData, consigneeService, notificationService, $uibModal){
+    $scope.srvc = srvcServiceData
+
+    $scope.srvc.data.edit_item = false
+    $scope.srvc.data.orderItem = null
+    $scope.searchKey = null
+
+    $scope.facets = [
+      {id: 1, code: "quantity", order: "asc", displayName: "Sort By Quantity Ascending"},
+      {id: 2, code: "quantity", order: "desc", displayName: "Sort By Quantity Descending"},
+      // {id: 3, code: "price", order: "asc", displayName: "Sort By Price ASC"},
+      // {id: 4, code: "price", order: "desc", displayName: "Sort By Price DESC"},
+      {id: 5, code: "created_at", order: "asc", displayName: "Sort By Oldest Item"},
+      {id: 6, code: "created_at", order: "desc", displayName: "Sort By Latest Item"},
+    ]
+
+    var loadCart = function(){
+      return boqService.getCart({'purchase_id': $stateParams.number, 'boq_purchase': true})
+    }
+
+    var loadConsignee = function(){
+      return consigneeService.init().then(function(response){
+        $scope.srvc.data.consignee = consigneeService;
+        return response
+      })
+    }
+    $scope.removeItemFromCart = function(oi){
+      var params = {cart_number: $stateParams.number, order_item_id: oi.id, purchase_id: $stateParams.number}
+      boqService.removeItemFromCart(params).then(function(response){
+        if(response.status == "success"){
+          $scope.srvc.data.current_cart.order_items = _.chain($scope.srvc.data.current_cart.order_items).filter(function(or_item){return or_item.id != oi.id}).value();
+          notificationService.success("$a$.m.srvc.rate_sheet_search.remove_item.cart.success")
+        }else{
+          notificationService.error(response.meta.message)
+        }
+      })
+    }
+    var setCurrentContext = function(){
+      return boqService.setCurrentContext($stateParams.number)
+    }
+    $scope.editItem = function(oi){
+      srvcServiceData.data.orderItem = oi
+      var params = {number: $stateParams.number, service_id: oi.service_id}
+      $state.go("edit_item", params, {relative: true, inherit: false})
+    }
+    var formatConsigneeData = function(){
+      _.map($scope.srvc.data.current_cart.order_items, function(order_item){
+        var  consignees = []
+        _.map(order_item.consignee_data, function(data){
+          var consigneeLocations = $scope.srvc.data.consignee.consignee_data[data.delivery_state.toUpperCase()]
+          var consignee = {}
+          if(consigneeLocations)
+            consignee = consigneeLocations.filter(function(f){return f.consignee_post_id == data.consignee_post_id})[0]
+          if(!consignee){
+            consignee = _.merge(data, {consignee_location: data.consignee_post_id, quantity_parameter: data.quantity_parameter})
+          }
+          else
+            consignee = {delivery_state: data.delivery_state.toUpperCase(), required_quantity: data.required_quantity, consignee_post_id: consignee.consignee_post_id, consignee_location: consignee.name, quantity_parameter: data.quantity_parameter}
+          consignees.push(consignee)
+        })
+        order_item.consignee_data = consignees
+      })
+    }
+    $scope.viewItemDetails = function(order_item){
+      $scope.order_item = order_item
+      var modalInstance = $uibModal.open({
+        ariaLabelledBy: 'modal-title',
+        ariaDescribedBy: 'modal-body',
+        templateUrl: '/javascripts/site_angular/srvc/views/boq/order_item_details.html',
+        scope: $scope,
+        size: 'md',
+        windowClass: "order-item-details",
+        controller: ['$scope','$uibModalInstance', 'babRA',function($scope,$uibModalInstance, babRA){
+          $scope.spec_filters = {}
+          $scope._ = _
+          $scope.spec_filters.cores = _.chain($scope.order_item.facets_list_for_api.service_params.filters).filter(function(f){return f.type == 'core'}).value()
+          $scope.spec_filters.addons = _.chain($scope.order_item.facets_list_for_api.service_params.filters).filter(function(f){return f.type == 'addon'}).value()
+          $scope.close = function () {
+            $uibModalInstance.close()
+          }
+        }]
+      })
+    }
+    $scope.navigateTo = function(state){
+      if (state == "index" || state == "new" || state == "boqdashboard") {
+        $scope.srvc.data = {cart: {}}
+        $state.go(state, {}, {relative: true, inherit: false})
+      }else{
+        if(state == 'edit_contract'){
+          editContract($scope.srvc.data.number)
+        }else if (state == 'checkout'){
+          BAB.Cart.setPurchase($scope.srvc.data.current_cart.number)
+          BAB.Cart.show();
+        }else{
+          $state.go(state, {number: $scope.srvc.data.number}, {relative: true, inherit: false})
+        }
+      }
+    }
+    var editContract = function(number){
+      var modalInstance = $uibModal.open({
+        ariaLabelledBy: 'modal-title',
+        ariaDescribedBy: 'modal-body',
+        templateUrl: '/javascripts/site_angular/srvc/views/boq/edit_contract.html',
+        size: 'md',
+        scope: $scope,
+        windowClass: "order-item-details",
+        controller: ['$scope','$uibModalInstance', '$state', 'boqService', '$filter',function($scope,$uibModalInstance, $state, boqService, $filter){
+          $scope.contract = angular.copy($scope.srvc.data.contract)
+          var myDate = new Date()
+          var toDay = new Date()
+          var service_lead_days = 7
+          $scope.datepicker = {
+            start_date: {
+              opened: false,
+              options: {
+                formatYear: 'yy',
+                startingDay: 1,
+                minDate: myDate.setDate(myDate.getDate()+service_lead_days),
+                maxDate: new Date($scope.contract.end_date)
+              }
+            },
+            end_date: {
+              opened: false,
+              options: {
+                formatYear: 'yy',
+                startingDay: 1,
+                minDate: myDate.setDate(myDate.getDate())
+              }
+            },
+            open: function(type){
+              $scope.datepicker[type].opened = true;
+            }
+          }
+          $scope.date_formatting = function(date_type){
+            if (date_type == 'start_date'){
+              var toDay = $scope.contract && $scope.contract.start_date ? angular.copy($scope.contract.start_date) : new Date()
+              $scope.datepicker.end_date.options.minDate = toDay.setDate(toDay.getDate() + 1)
+            }
+            if (date_type == 'end_date'){
+              var toDay = $scope.contract && $scope.contract.end_date ? angular.copy($scope.contract.end_date) : null
+              $scope.datepicker.start_date.options.maxDate = toDay
+            }
+            $scope.contract[date_type] = $filter('date')($scope.contract[date_type],'yyyy-MM-dd')
+          }
+
+          var invalidContract = function(){
+            return _.isEmpty($scope.contract) || _.isNil($scope.contract.start_date) || _.isNil($scope.contract.end_date)
+          }
+
+          $scope.updateContract = function(){
+            if (!invalidContract()) {
+              if($scope.srvc.isNewCart($stateParams.number)){
+                $scope.srvc.data.contract = $scope.contract
+                $scope.close()
+              }
+              else{
+                boqService.updateContract({purchase_id: $scope.srvc.data.current_cart.number, contract: $scope.contract}).then(function(response){
+                  if (response.meta.result == "success"){
+                    notificationService.success("Contract updated successfully !!")
+                    $scope.srvc.data.contract = $scope.contract
+                    $scope.close()
+                  }else{
+                    notificationService.error(response.meta.message)
+                  }
+                })
+              }
+            }
+          }
+
+          $scope.close = function () {
+            $uibModalInstance.close()
+          }
+        }]
+      })
+    }
+    $scope.filterWithSubString = function(item){
+      $scope.searchKey = $scope.searchKey || ''
+      return _.includes(_.toLower(item.title), _.toLower($scope.searchKey))
+    }
+    $scope.sortItemBy = function(selected){
+      if(_.isEmpty(selected) || _.isEmpty($scope.srvc.data.order_items))
+        return
+      var ois = angular.copy($scope.srvc.data.order_items)
+      _.chain(ois).map(function(oi){oi.total.value = parseFloat(oi.total.value)}).value()
+      if(selected.code == "quantity")
+        $scope.srvc.data.current_cart.order_items = _.orderBy(ois, ['quantity'], [selected.order]);
+      else if(selected.code == "price"){
+        $scope.srvc.data.current_cart.order_items = _.orderBy(ois, ['total.value'], [selected.order]);
+      }
+      else if (selected.code == "created_at")
+        $scope.srvc.data.current_cart.order_items = _.orderBy(ois, ['id'], [selected.order]);
+    }
+    var loadCartContext = function() {
+      $scope.srvc.data.reload_cart = false
+      if($stateParams.number == "new_cart"){
+        $scope.srvc.data.cart[$stateParams.number] = true
+        $scope.srvc.data.contract = srvcServiceData.data.contract
+        if(_.isEmpty(srvcServiceData.data) || _.isEmpty(srvcServiceData.data.contract)){
+          $state.go('new', {})
+        }
+      }else{
+        loadCart().then(function(response){
+          if(response.meta.result == "success"){
+            $scope.srvc.data.current_cart  = response
+            $scope.srvc.data.contract = response.contract
+            $scope.srvc.data.number = response.number
+            BAB.Cart.setPurchase($scope.srvc.data.current_cart.number)
+            loadConsignee().then(function(response){
+              formatConsigneeData()
+              $scope.srvc.data.order_items = angular.copy($scope.srvc.data.current_cart.order_items)
+            })
+          }else{
+            notificationService.error(response.meta.message)
+            $state.go("index", {relative: true, inherit: false})
+          }
+        })
+      }
+    }
+    loadCartContext()
+}])
+angular.module('siteApp')
+
+.service('svcDependenciesRuleService',['$filter',
+  function($filter){
+    var service = {
+      init_deps: function(dependencies,universe) {
+        var that = this
+        that.dependencies = dependencies;
+        that.deps_col = _.chain(that.dependencies).map('columns').flatten().value()
+        that.universe = angular.copy(universe);
+        return this;
+      },
+      apply_deps: function(data,source,target){
+        var that = this
+        if(_.includes(that.deps_col, target)){
+          // console.log("for ",col,row[col])
+          if(_.isArray(data) && data.length > 0){
+            var selected_deps = _.chain(that.dependencies).filter(function(dep){return _.includes(dep.columns,source)}).map('allowed_values').value()[0]
+            if(_.isArray(data)){
+              var value_list = _.map(data,function(val){
+                var selected_rows = _.chain(selected_deps).filter(function(row){return _.includes(row[source].value,val) && _.includes(row[source].columns,target)}).value()
+                if(selected_rows.length > 0){
+                  return _.chain(selected_rows).map(target).map('value').flatten().uniq().value()
+                }else{
+                  return that.universe[target].value
+                }
+              })
+              var allowed_values = that.intersection(value_list)
+            }
+            return _.filter(allowed_values,function(val){return _.includes(that.universe[target].value,val)})
+          }
+        }
+        return that.universe[target].value
+      },
+      // Supporitng site and admin dependecies
+      // Site selected row using array data structure. Admin is using hash data structrue
+      convert_row: function (_row) {
+        var new_row = {}
+        _.forEach(_row, function (value, key) {
+          new_row[key] = _.has(value, 'value') ? (value.value || []) : (value || [])
+        })
+        return new_row
+      },
+      matching_row: function (dep_ordered_columns, dep_rows, user_row) {
+        if(!user_row)
+          return dep_rows
+        var matched_row = dep_rows
+        _.forEach(dep_ordered_columns, function (col) {
+          if (user_row[col] && user_row[col].length > 0){
+            var selected_row = []
+            _.forEach(matched_row, function (row) {
+              var intersect = _.intersection(row[col].value, user_row[col])
+              if (intersect.length > 0){
+                selected_row.push(row)
+              }
+            })
+            matched_row = selected_row
+          }else{
+            return false
+          }
+        })
+        return matched_row
+      },
+      apply_deps_for_specific_row: function (data, source, target, row) {
+        var that = this
+        var converted_row = that.convert_row(angular.copy(row))
+        if (_.includes(that.deps_col, target)) {
+          // console.log("for ",col,row[col])
+          if (_.isArray(data) && data.length > 0) {
+            var dep = _.chain(that.dependencies).filter(function (dep) { return _.includes(dep.columns, source) })
+            var selected_dep_ordered_columns =_.filter(dep.map('columns').value(),function(dep_col){
+              return _.includes(dep_col,target);
+            })[0];
+            var applicable_deps = _.filter(dep.map('allowed_values').value(),function(dep_rules){
+              var includes = false;
+              for(i = 0 ;i < dep_rules.length ; i++)
+                if(_.includes(_.keys(dep_rules[i]),target))
+                  includes = true;
+              return includes
+              })
+            var selected_deps = that.matching_row(selected_dep_ordered_columns.slice(0, selected_dep_ordered_columns.indexOf(source)+1), applicable_deps[0], converted_row)
+            if (_.isArray(data)) {
+              var value_list = _.map(data, function (val) {
+                var selected_rows = _.chain(selected_deps).filter(function (row) { return _.includes(row[source].value, val) }).value()
+                if (selected_rows.length > 0) {
+                  return _.chain(selected_rows).map(target).map('value').flatten().uniq().value()
+                } else {
+                  return that.universe[target].value
+                }
+              })
+              var allowed_values = that.intersection(value_list)
+            }
+            return _.filter(allowed_values, function (val) { return _.includes(that.universe[target].value, val) })
+          }
+        }
+        return that.universe[target].value
+      },
+      intersection: function () {
+        var result = [];
+        var lists;
+
+        if(arguments.length === 1) {
+          lists = arguments[0];
+        } else {
+          lists = arguments;
+        }
+
+        for(var i = 0; i < lists.length; i++) {
+          var currentList = lists[i];
+          for(var y = 0; y < currentList.length; y++) {
+              var currentValue = currentList[y];
+            if(result.indexOf(currentValue) === -1) {
+              var existsInAll = true;
+              for(var x = 0; x < lists.length; x++) {
+                if(lists[x].indexOf(currentValue) === -1) {
+                  existsInAll = false;
+                  break;
+                }
+              }
+              if(existsInAll) {
+                result.push(currentValue);
+              }
+            }
+          }
+        }
+        return result;
+      }
+    };
+    return function(dependencies,universe) {
+      return service.init_deps(dependencies,universe);
+    };
+  }
+])

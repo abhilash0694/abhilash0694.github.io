@@ -1,0 +1,317 @@
+app = angular.module("uiBrowseNodeApp", ['siteApp', 'ui.router', 'ui.bootstrap', 'ui.select'])
+
+app
+  .constant('uiBrowseConfigDefault', {
+    filters:[],
+    defaultFilters: {},
+    searchFilterConfig: {'search': {}},
+    browseNodesActions: "/javascripts/angular_components/ui-browse-node-tree/src/template/browse_nodes_actions.html"
+  })
+  .value('uiBrowseConfig', {})
+  .config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRouterProvider) {
+    $stateProvider
+      .state('browse', {
+        url: '/browse/:id?{page:int}&{filters:json}&{view_type:string}',
+        template: '<browse></browse>'
+      })
+    $urlRouterProvider.otherwise('/browse/');
+  }])
+  .factory('browseRA', ['babRA', function(babRA) {
+    // FIXME: clean support for rails like param passing
+    return babRA.withConfig(function(RestangularConfigurer) {
+      RestangularConfigurer.setBaseUrl('/cms/others/api');
+    }).setRequestSuffix('');
+  }])
+  .factory('config', ['uiBrowseConfig', 'uiBrowseConfigDefault', function(uiBrowseConfig, uiBrowseConfigDefault){
+    var config = angular.merge({}, uiBrowseConfigDefault, uiBrowseConfig);
+    return config;
+  }])
+  .service('browseFilterService', ['config', '$state', function(config, $state){
+    return function(){
+      return {
+        initFilter: function(){
+          var self = this;
+          this.buildFilters()
+          this.activateDefaultFilters()
+          this.activateAppliedFilters()
+          this.activateEnforcedFilters()
+        },
+        buildFilters: function(){
+          var self = this
+          self.filters = {}
+          $.each(config.filters, function(_, filter){
+            self.filters[filter.code] = filter
+          })
+        },
+        activateDefaultFilters: function(){
+          var self = this;
+          var appliedFilters = $state.params.filters || {}
+          var shouldApplyDefaultFilter = true
+          $(appliedFilters).filter(function(_, code){
+            var filter = self.filters[code]
+            if(filter && !filter.incognito){
+              shouldApplyDefaultFilter = false
+            }
+          })
+          if(shouldApplyDefaultFilter){
+            $.each(config.defaultFilters, function(code, val){
+              var filter = self.getFilter(code)
+              if(filter){
+                self.markActive(filter)
+              }
+            })
+          }
+        },
+        activateEnforcedFilters: function(){
+          var self = this;
+          $.each(config.filters, function(_, filter){
+            if(filter.enforced){
+              filter.status = 'active'
+            }
+          })
+        },
+        activateAppliedFilters: function(){
+          var self = this;
+          var appliedFilters = $state.params.filters || {}
+          $.each(appliedFilters, function(code, val){
+            var filter = self.getFilter(code)
+            if(filter){
+              self.markActive(filter)
+            }
+          })
+        },
+        getFilter: function(filterCode){
+          return this.filters[filterCode]
+        },
+        getActiveFilters: function(){
+          var activeFilters = {}
+          $.each(config.filters, function(_, filter){
+            if(filter.status == 'active'){
+              activeFilters[filter.code] = filter.value
+            }
+          })
+          return activeFilters
+        },
+        markActive: function(activeFilter){
+          var self = this
+          if(activeFilter.solo){
+            $.each(config.filters, function(_, filter){
+              if(!filter.enforced){
+                filter.status = 'inactive'
+              }
+            });
+          }
+          activeFilter.status = 'active'
+        },
+        applyFilter: function(filter){
+          $state.params
+          var self = this
+          self.markActive(filter)
+          self.setAppliedFilters()
+        },
+        setAppliedFilters: function(){
+          var self = this
+          var filtersToApply = {}
+          self.activateEnforcedFilters()
+          $.each(config.filters, function(_, filter){
+            if(filter.status == 'active'){
+              filtersToApply[filter.code] = filter.value
+            }
+          })
+          $state.go('browse', {filters: filtersToApply}, {inherit: false, reload: true});
+        }
+      }
+    }()
+  }])
+  .service('browseService', ['browseRA', 'config', '$httpParamSerializerJQLike', '$state', function(browseRA, config, $httpParamSerializerJQLike, $state){
+    return {
+      getChildren: function(node, params){
+        var resp;
+        params = params || {}
+        if(node){
+          params.browse_node_id=node
+        }
+        resp = browseRA.one("services").customPOST(params, "browse")
+        return resp;
+      },
+      getList: function(searchParams){
+        var resp;
+        var params = $httpParamSerializerJQLike(
+          angular.merge({}, config.searchFilterConfig, searchParams)
+        );
+        resp = browseRA.one("services").customGET("list.json?"+ params)
+        return resp;
+      }
+    }
+  }])
+app
+  .component('browse', {
+    templateUrl: "/javascripts/angular_components/ui-browse-node-tree/src/template/browse.html",
+    controller: ['$scope', 'browseService', 'browseFilterService', 'config', '$state', '$window', '$stateParams', function($scope, browseService, browseFilterService, config, $state, $window, $stateParams){
+      $scope.debug = false
+      browseFilterService.initFilter()
+      var nodePath = $state.params.id,
+        currentPage = $state.params.page || 1,
+        activeFilters = browseFilterService.getActiveFilters()
+      // filters
+      $scope.filters = config.filters
+      $scope.categoryRequestConfig = config.categoryRequestConfig
+      $scope.buttons = []
+
+      $scope.view_type = $stateParams.view_type ;
+      $scope.GridList = function(val){
+        $scope.view_type = val;
+      };
+
+      $scope.pageChanged = function() {
+        $state.go('browse', {page: $scope.paginationMeta.page,view_type: $scope.view_type});
+      };
+      $scope.goBack= function() {
+        if($window.history && $window.history.back){
+          $window.history.back();
+        }
+        else {
+          $state.go('browse');
+        }
+      };
+
+      $scope.add_filters_and_buttons = function(data){
+        var override_filters = []
+        _.forEach(config.filters, function(filter){
+          if(filter.can == null || _.includes(data.abilities, filter.can)){
+            override_filters.push(filter)
+          }
+        })
+        $scope.filters = override_filters
+        _.forEach(data.abilities, function(ability){
+          if(ability == 'create'){
+            $scope.buttons.push({display_name:'Create New Service', uihref: "create"})
+          }
+          if(ability == 'read'){
+            $scope.buttons.push({display_name:'View Service Details', uihref: "showDetails"})
+          }
+          if($scope.node && $scope.node.type == 'CompositeService' && (ability =='update' || ability =='approve')){
+            $scope.buttons.push({display_name:'Edit', uihref: 'open({id: node.id})'})
+          }
+        })
+      }
+
+      browseService.getChildren(nodePath, {filters: activeFilters, page: currentPage,view_type:$scope.view_type }).then(function(data){
+        if(data && data.tree){
+          $scope.node = data.tree
+          $scope.paginationMeta = data.pagination_meta
+          $scope.paginationMeta.max_size= $scope.paginationMeta.max_size|| 10
+          $scope.view_type= data.view_type
+        }
+        if(data && data.abilities){
+          $scope.add_filters_and_buttons(data)
+        }
+      })
+    }]
+  })
+  .directive("uiBrowseNode", ['$state', function($state){
+    var link = function($scope, element, attrs){
+      $scope.navigateTo = function($event, node){
+        $event.preventDefault();
+        $event.stopPropagation();
+        if(node.type === 'CompositeService'){
+          $state.go('browse', {id: node.id}, {relative: true, inherit: false})
+        }
+        else{
+          $state.go('open', {id: node.id}, {relative: true, inherit: false})
+        }
+      };
+    };
+    return {
+      restrict: 'E',
+      link: link,
+      scope:{
+        node: '=',
+        viewType: '=?'
+      },
+      templateUrl: "/javascripts/angular_components/ui-browse-node-tree/src/template/browse_nodes.html"
+    };
+  }])
+  .directive("uiBrowseNodesActions", ['$state', "config", "browseFilterService", function($state, config, browseFilterService){
+    var link = function($scope, element, attrs){
+    };
+    return {
+      restrict: 'E',
+      link: link,
+      controller: ['$scope', '$state', function($scope, $state){
+        $scope.params = $state.params
+        $scope.applyFilter = function(filter){
+          browseFilterService.applyFilter(filter);
+        }
+      }],
+      scope:{
+        node: '=',
+        filters: '=',
+        buttons:'='
+      },
+      templateUrl: function(element, attrs){
+        return config.browseNodesActions;
+      }
+    };
+  }])
+  .directive("uiBrowseNodesNav", ['$state', function($state){
+    var link = function($scope, element, attrs){
+    };
+    return {
+      restrict: 'E',
+      link: link,
+      scope:{
+        node: '=',
+        filters: '=',
+        buttons:'='
+      },
+      templateUrl: "/javascripts/angular_components/ui-browse-node-tree/src/template/browse_nodes_nav.html",
+      controller: ['$scope', 'browseService', '$state', '$window', function($scope, browseService, $state, $window){
+      }]
+    };
+  }])
+
+  .directive("uiBrowseNodesSearch", ['$state', function($state){
+    var link = function($scope, element, attrs){
+    };
+    return {
+      restrict: 'E',
+      scope:{
+       calledFrom : "=?"
+      },
+      link: link,
+      templateUrl: "/javascripts/angular_components/ui-browse-node-tree/src/template/browse_nodes_search.html",
+      controller: ['$scope', '$element', '$attrs','$stateParams', 'browseService', '$translate', function($scope, $element, $attrs, $stateParams, browseService, $translate){
+
+        function set_source(data){
+          $translate('$a$.g.ui_browse_node_search.placeholder.text').then(function (translated_msg) {
+            $scope.source = {placeholder: translated_msg, list: data.list}
+          }, function (non_translated_msg) {
+            $scope.source = {placeholder: "Search Service Name/ID", list: data.list}
+          });
+        }
+
+        browseService.getList().then(function(data){
+          if(data && data.list){
+            set_source(data)
+          }
+        })
+
+        $scope.onSelect = function(){
+          var node = $scope.source.selected;
+          var nextState = 'browse';
+          if(node.type != 'CompositeService'){
+            nextState = 'open'
+          }
+          if(!$scope.calledFrom){
+            $state.go(nextState, {id: node.id}, {reload: true})
+          }
+          else{
+            nextState = 'serviceVersion';
+            $state.go(nextState, {id: node.id}, {version:$stateParams['version']})
+          }
+        }
+      }]
+    };
+  }])
+

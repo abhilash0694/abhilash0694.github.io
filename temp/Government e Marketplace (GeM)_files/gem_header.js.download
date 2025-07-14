@@ -1,0 +1,100 @@
+/*!
+ * IE10 viewport hack for Surface/desktop Windows 8 bug
+ * Copyright 2014-2015 Twitter, Inc.
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+ */
+
+// See the Getting Started docs for more information:
+// http://getbootstrap.com/getting-started/#support-ie10-width
+
+(function () {
+  'use strict';
+
+  if (navigator.userAgent.match(/IEMobile\/10\.0/)) {
+    var msViewportStyle = document.createElement('style')
+    msViewportStyle.appendChild(
+      document.createTextNode(
+        '@-ms-viewport{width:auto!important}'
+      )
+    )
+    document.querySelector('head').appendChild(msViewportStyle)
+  }
+
+})();
+
+$(document).ready(function() {
+   $('.sd, .mse').click(function(e) { 
+        e.preventDefault();
+        $('.mmen').toggleClass('open');
+    }); 
+   
+	$('.hasch ul').slideUp();
+	$(".mmen .hasch > a").click(function(e){
+		e.preventDefault();
+		if($(this).parent().hasClass('openmm')){
+		   $(this).parent().children('ul').slideUp();
+		   $(this).parent().removeClass('openmm');
+		}else{
+			$(this).parent().children('ul').slideDown();
+		   $(this).parent().addClass('openmm');
+		}
+	}); 
+});
+
+
+$(function(){
+  function set_user_preference(lang){
+    if($('html').data('logged-in')){
+      $.ajax({
+        url: '/rest/api/v1/i18n/set_user_preference.json',
+        type: 'post',
+        data: {preference: {language: lang}}
+      });
+    }
+  }
+
+  $('.language-select').on('change', function(){
+    var langSelector = $(this);
+    var lang = langSelector.val();
+    var langText = langSelector.find('option:selected').text();
+    var langCookieKey = langSelector.data("lang-cookie-key");
+    var req_type = $('html').data('req-type')
+    $('#lang-change-dialog #display-lang').text(langText)
+    $('#lang-change-dialog').dialog({
+      autoOpen: false,
+      dialogClass: 'lang-popup',
+      modal: true,
+      height: "auto",
+      width: "auto",
+      close: function(){
+        $('.language-select').val($('.language-select').val()) //reset old value
+      },
+      buttons:[{
+        text: $('#lang-change-popup-markup .ok-btn-text:first').text(),
+        click: function(data){
+          $(this).dialog("close");
+          $.cookies.set(langCookieKey, lang, {domain: BAB.endpoints.base_domain})
+          base_url = window.location.origin + "/" + lang
+          set_user_preference(lang)
+          if(req_type=='get'){
+            var MULTILINGUAL_URL_PATTERN = /^\/(\w{2})(?:\/|$)/
+            if(MULTILINGUAL_URL_PATTERN.test(window.location.pathname))
+              pathname = "/" + window.location.pathname.replace(MULTILINGUAL_URL_PATTERN,'')
+            else
+              pathname = window.location.pathname
+            navigate_url = base_url + pathname + window.location.search + window.location.hash
+          }
+          else
+            navigate_url = base_url
+          window.location = navigate_url
+        }
+      },
+      {
+        text: $('#lang-change-popup-markup .cancel-btn-text:first').text(),
+        click: function(data){
+          $(this).dialog("close");
+        }
+      }]
+    }).dialog('open')
+  })
+})
